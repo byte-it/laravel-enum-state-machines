@@ -29,7 +29,6 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
 
-// TODO: Properly restore lock
 class PendingTransition implements TransitionContract
 {
     use SerializesModels;
