@@ -1,93 +1,119 @@
-# :package_description
+# Laravel Enum State Machines
+Define DFA like state machines for your eloquent models, keep track of changes and prevent unwanted flows of your business logic.
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/:vendor_slug/:package_slug.svg?style=flat-square)](https://packagist.org/packages/:vendor_slug/:package_slug)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/:vendor_slug/:package_slug/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/:vendor_slug/:package_slug/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/:vendor_slug/:package_slug/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/:vendor_slug/:package_slug/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/:vendor_slug/:package_slug.svg?style=flat-square)](https://packagist.org/packages/:vendor_slug/:package_slug)
-<!--delete-->
----
-This repo can be used to scaffold a Laravel package. Follow these steps to get started:
+## Features/todos
+- [x] Define state machines as native enum
+- [x] Apply state machines to fields on eloquent models
+- [x] Only allow transitions defined in the state machine
+- [x] Allow additional properties to be applied to transitions
+- [x] Postpone transitions
+- [x] Guards for transition
+- [ ] General events before/after each transition via named event
+- [x] Events for each transition like eloquent models
+- [x] Actions for defined transitions
+- [x] Action auto discovery + caching
+- [ ] Gates to authorize transitions
+- [ ] Pending/Running Transitions + lock any transition till the pending is performed or aborted
+- [x] Create common interface for past, pending and postponed transitions
+- [ ] Add method to get all past/pending/postponed transitions
+- [ ] Add loop handling to represent model updates
+- [x] Convert tests to pest
+- [ ] Wrap transitions in transactions
+- [ ] Add failed transitions table + model
+- [ ] Add executed guards + actions to the transition model
 
-1. Press the "Use this template" button at the top of this repo to create a new repo with the contents of this skeleton.
-2. Run "php ./configure.php" to run a script that will replace all placeholders throughout all the files.
-3. Have fun creating your package.
-4. If you need help creating a package, consider picking up our <a href="https://laravelpackage.training">Laravel Package Training</a> video course.
----
-<!--/delete-->
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
 
-## Support us
+- [ ] Visualize state machines either via console or some html output including guards and actions
 
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/:package_name.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/:package_name)
 
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
-
-## Installation
-
-You can install the package via composer:
-
-```bash
-composer require :vendor_slug/:package_slug
+## State machines
+The state represents the current status of your model. (But model can have multiple states)
+The state is defined as an enum, in which the cases represent the set of possible states.
+```php
+enum State: string {
+  case Created = 'created';
+  case Intermediate = 'intermediate';
+  case Finished = 'finished';
+}
 ```
 
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --tag=":package_slug-migrations"
-php artisan migrate
-```
-
-You can publish the config file with:
-
-```bash
-php artisan vendor:publish --tag=":package_slug-config"
-```
-
-This is the contents of the published config file:
+The possible transitions are defined via the method `transitions` that uses the PHP `match` operation to define all possible
+outgoing transitions for a state.
 
 ```php
-return [
-];
+enum State: string implements States {
+  case Created = 'created';
+  case Intermediate = 'intermediate';
+  case Finished = 'finished';
+  
+   public function transitions(): array
+    {
+        return match ($this) {
+            self::Created => [self::Intermidiate],
+            self::Intermidiate => [self::Finished],
+            default => []
+        };
+    }
+}
 ```
 
-Optionally, you can publish the views using
+As default the first case of the enum will be used as initial/starting state. But it can be defined via the use of an attribute.
 
-```bash
-php artisan vendor:publish --tag=":package_slug-views"
-```
 
-## Usage
+In difference to the theoretical definition of an DFA, we don't use final states.
+
+
+## Transitions
+Transitions are not determined by input, but explicitly giving the state to transition to.
 
 ```php
-$variable = new VendorName\Skeleton();
-echo $variable->echoPhrase('Hello, VendorName!');
+  $model->status()->transitionTo(State::Intermidiate);
 ```
 
-## Testing
 
-```bash
-composer test
-```
+### Transition Bus/Pipeline System
 
-## Changelog
 
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+### Guards
+It's not always enough to limit transitions by its start and end. For that it is possible
+to add transition guards that can perform any additional validation.
 
-## Contributing
+### Gates
+Additionally, transitions can be limited by authorization gates.
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+### Actions
+Actions can be run before (as part of the transition) and after a transition is performed.
+Be aware that a failed before transition cancels the whole transition.
 
-## Security Vulnerabilities
+Before Actions can modify the model or perform any other action. 
+Changes to the model will be included in the `changed_attributes`of the transition. 
+(Except for actions that cause a pending transition)
 
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
+The after action should be primary for things like notifications etc.
 
-## Credits
 
-- [:author_name](https://github.com/:author_username)
-- [All Contributors](../../contributors)
+### Pending transition
+Some transitions carry out actions that take time, for example q queued a job. During this time no further
+transitions should be allowed to happen on that model.
+To achieve this, the transition must be marked as pending, save to the database and create some sort of lock,
+for example via redis.
+Once all is done for the transition, it must be marked `finished`. That releases the lock and moves the transitions
+from pending to past.
 
-## License
+A transition will be marked as pending if one of the before actions is queued.
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+
+### Past transitions
+
+[//]: # (TODO: Fill)
+
+### Postponed transitions
+Sometimes a transition shall be marked for the future, for example an expiration. The same result
+could be achieved by checking the expiration in a cron job and trigger the transition then.
+A postponed transition has the advantage to see at once when this transition should happen.
+The transition will be canceled once the state transitioned to a state which does not allow the postponed transition anymore.
+
+
+### History
+
+Based on and inspired by https://github.com/asantibanez/laravel-eloquent-state-machines by https://github.com/asantibanez!

@@ -1,17 +1,16 @@
 {
-    "name": ":vendor_slug/:package_slug",
-    "description": ":package_description",
+    "name": "byteit/laravel-enum-state-machines",
+    "description": "This is my package laravel-enum-state-machines",
     "keywords": [
-        ":vendor_name",
         "laravel",
-        ":package_slug"
+        "laravel-enum-state-machines"
     ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "homepage": "https://github.com/captncc/laravel-enum-state-machines",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "Johannes Kees",
+            "email": "johannes@lets-byte.it",
             "role": "Developer"
         }
     ],
@@ -35,13 +34,13 @@
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src/",
-            "VendorName\\Skeleton\\Database\\Factories\\": "database/factories/"
+            "byteit\\LaravelEnumStateMachines\\": "src/",
+            "byteit\\LaravelEnumStateMachines\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests/"
+            "byteit\\LaravelEnumStateMachines\\Tests\\": "tests/"
         }
     },
     "scripts": {
@@ -61,10 +60,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "VendorName\\Skeleton\\SkeletonServiceProvider"
+                "byteit\\LaravelEnumStateMachines\\LaravelEnumStateMachinesServiceProvider"
             ],
             "aliases": {
-                "Skeleton": "VendorName\\Skeleton\\Facades\\Skeleton"
+                "LaravelEnumStateMachines": "byteit\\LaravelEnumStateMachines\\Facades\\LaravelEnumStateMachines"
             }
         }
     },
