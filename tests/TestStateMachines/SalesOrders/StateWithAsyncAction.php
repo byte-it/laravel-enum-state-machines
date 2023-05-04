@@ -2,7 +2,7 @@
 
 namespace byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders;
 
-use byteit\LaravelEnumStateMachines\Attributes\Before;
+use byteit\LaravelEnumStateMachines\Attributes\Action;
 use byteit\LaravelEnumStateMachines\Attributes\HasActions;
 use byteit\LaravelEnumStateMachines\Attributes\RecordHistory;
 use byteit\LaravelEnumStateMachines\Contracts\States;
@@ -35,7 +35,7 @@ enum StateWithAsyncAction: string implements States
         };
     }
 
-    #[Before(to: self::ChainAction)]
+    #[Action(to: self::ChainAction)]
     public function chain(): PendingChain
     {
         return Bus::chain([
@@ -43,7 +43,7 @@ enum StateWithAsyncAction: string implements States
         ]);
     }
 
-    #[Before(to: self::BatchAction)]
+    #[Action(to: self::BatchAction)]
     public function batch(): PendingBatch
     {
         return Bus::batch([]);

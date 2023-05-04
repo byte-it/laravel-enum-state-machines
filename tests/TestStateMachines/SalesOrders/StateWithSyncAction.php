@@ -2,7 +2,7 @@
 
 namespace byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders;
 
-use byteit\LaravelEnumStateMachines\Attributes\Before;
+use byteit\LaravelEnumStateMachines\Attributes\Action;
 use byteit\LaravelEnumStateMachines\Attributes\HasActions;
 use byteit\LaravelEnumStateMachines\Attributes\RecordHistory;
 use byteit\LaravelEnumStateMachines\Contracts\States;
@@ -29,7 +29,7 @@ enum StateWithSyncAction: string implements States
         };
     }
 
-    #[Before(to: self::InlineSyncAction)]
+    #[Action(to: self::InlineSyncAction)]
     public function inlineSyncActionHandler(SalesOrderWithBeforeTransitionHook $order): void
     {
         $order->notes = 'inlineSync';

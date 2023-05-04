@@ -22,8 +22,7 @@ class TransitionActionExecutor
 
     public function __construct(
         protected mixed $action,
-    )
-    {
+    ) {
     }
 
     /**

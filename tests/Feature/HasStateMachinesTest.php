@@ -1,7 +1,7 @@
 <?php
 
 namespace byteit\LaravelEnumStateMachines\Tests\Feature;
-
+use byteit\LaravelEnumStateMachines\StateMachineManager;
 use byteit\LaravelEnumStateMachines\Exceptions\TransitionGuardException;
 use byteit\LaravelEnumStateMachines\Exceptions\TransitionNotAllowedException;
 use byteit\LaravelEnumStateMachines\Models\PostponedTransition;
@@ -21,11 +21,13 @@ it('can configure state machines', function (SalesOrder $salesOrder): void {
 
 it('should set default state for field', function (SalesOrder $salesOrder): void {
 
-    $statusStateMachine = StateMachine::boot(
+    $manager = new StateMachineManager();
+
+    $statusStateMachine = $manager->make(
         StateWithSyncAction::class
     );
 
-    $fulfillmentStateMachine = StateMachine::boot(
+    $fulfillmentStateMachine = $manager->make(
         StateWithAsyncAction::class
     );
 
@@ -114,7 +116,7 @@ it('should register auth as responsible for transition when available',
             ->and($responsible)
             ->toBeInstanceOf(SalesManager::class);
     }
-)->with('salesManager',)->with('salesOrder');
+)->with('salesManager')->with('salesOrder');
 
 it('can check next possible transitions', function (SalesOrder $salesOrder): void {
     expect($salesOrder->syncState()->is(StateWithSyncAction::Created))
@@ -128,7 +130,7 @@ it('can check next possible transitions', function (SalesOrder $salesOrder): voi
 it('should throw exception for invalid state on transition', function (SalesOrder $salesOrder): void {
     expect($salesOrder->syncState()->canBe(StateWithSyncAction::Created))
         ->toBeFalse()
-        ->and(fn() => $salesOrder->syncState()->transitionTo(StateWithSyncAction::Created))
+        ->and(fn () => $salesOrder->syncState()->transitionTo(StateWithSyncAction::Created))
         ->toThrow(TransitionNotAllowedException::class);
 })->with('salesOrder');
 
@@ -138,7 +140,7 @@ it('should throw exception for class guard on transition', function (SalesOrder 
         ->toBeTrue()
         ->and($salesOrder->state()->canBe(TestState::Intermediate))
         ->toBeTrue()
-        ->and(fn() => $salesOrder->state()->transitionTo(TestState::Guarded))
+        ->and(fn () => $salesOrder->state()->transitionTo(TestState::Guarded))
         ->toThrow(TransitionGuardException::class);
 
 })->with('salesOrder');
@@ -147,7 +149,7 @@ it('should throw exception for inline guard on transition',
     function (SalesOrder $salesOrder): void {
         expect($salesOrder->state()->is(TestState::Init))->toBeTrue()
             ->and($salesOrder->state()->canBe(TestState::Intermediate))->toBeTrue()
-            ->and(fn() => $salesOrder->state()->transitionTo(TestState::InlineGuarded))
+            ->and(fn () => $salesOrder->state()->transitionTo(TestState::InlineGuarded))
             ->toThrow(TransitionGuardException::class);
     })->with('salesOrder');
 
@@ -181,7 +183,7 @@ it('should save auth user as responsible in record history when creating model',
         expect($salesOrder->syncState()->responsible()->id)->toEqual($salesManager->id);
     }
 )->with(
-    fn() => SalesManager::factory()->create(),
+    fn () => SalesManager::factory()->create(),
     'salesOrder',
 );
 
@@ -278,11 +280,11 @@ it('can record postponed transition',
             ->toEqual($postponedTransition->responsible->id);
 
     }
-)->with('salesManager',)->with('salesOrder');
+)->with('salesManager')->with('salesOrder');
 
 it('should throw exception for invalid state on postponed transition',
     function (SalesOrder $salesOrder) {
-        expect(fn() => $salesOrder->state()->postponeTransitionTo(
+        expect(fn () => $salesOrder->state()->postponeTransitionTo(
             TestState::Finished,
             Carbon::tomorrow()
         ))->toThrow(TransitionNotAllowedException::class);

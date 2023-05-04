@@ -2,7 +2,7 @@
 
 namespace byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\TransitionActions;
 
-use byteit\LaravelEnumStateMachines\Attributes\Before;
+use byteit\LaravelEnumStateMachines\Attributes\Action;
 use byteit\LaravelEnumStateMachines\Jobs\Concerns\InteractsWithTransition;
 use byteit\LaravelEnumStateMachines\Tests\TestModels\SalesOrder;
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\StateWithAsyncAction;
@@ -12,7 +12,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use RuntimeException;
 use Throwable;
 
-#[Before(to: StateWithAsyncAction::AsyncAction)]
+#[Action(to: StateWithAsyncAction::AsyncAction)]
 class QueuedTransitionAction implements ShouldQueue
 {
     use InteractsWithQueue, InteractsWithTransition, Queueable;

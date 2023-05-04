@@ -2,11 +2,11 @@
 
 namespace byteit\LaravelEnumStateMachines\Traits;
 
+use byteit\LaravelEnumStateMachines\StateMachineManager;
 use byteit\LaravelEnumStateMachines\Contracts\States;
 use byteit\LaravelEnumStateMachines\Models\PostponedTransition;
 use byteit\LaravelEnumStateMachines\Models\Transition;
 use byteit\LaravelEnumStateMachines\State;
-use byteit\LaravelEnumStateMachines\StateMachine;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -95,13 +95,16 @@ trait HasStateMachines
     }
 
     /**
-     * @param  class-string<States>  $states
+     * @param class-string<States> $states
+     * @param string $attribute
+     * @return State
+     * @throws BindingResolutionException
      */
     protected function stateMachine(
         string $states,
         string $attribute,
     ): State {
-        $stateMachine = StateMachine::boot($states);
+        $stateMachine = app(StateMachineManager::class)->make($states);
 
         return new State(
             $states,

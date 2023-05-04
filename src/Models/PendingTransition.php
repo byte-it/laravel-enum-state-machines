@@ -9,11 +9,10 @@ use byteit\LaravelEnumStateMachines\Contracts\Transition as TransitionContract;
 use byteit\LaravelEnumStateMachines\Events\TransitionCompleted;
 use byteit\LaravelEnumStateMachines\Events\TransitionFailed;
 use byteit\LaravelEnumStateMachines\Events\TransitionStarted;
-use byteit\LaravelEnumStateMachines\Exceptions\TransitionGuardException;
 use byteit\LaravelEnumStateMachines\Exceptions\StateLocked;
+use byteit\LaravelEnumStateMachines\Exceptions\TransitionGuardException;
 use byteit\LaravelEnumStateMachines\Jobs\TransitionActionExecutor;
 use byteit\LaravelEnumStateMachines\OnTransition;
-use byteit\LaravelEnumStateMachines\StateMachine;
 use byteit\LaravelEnumStateMachines\Traits\HasStateMachines;
 use byteit\LaravelEnumStateMachines\TransitionRepository;
 use Carbon\Carbon;
@@ -49,20 +48,19 @@ class PendingTransition implements TransitionContract
 
     /**
      * @param (Model&HasStateMachines) $model
+     * @param  class-string<TransitionCompleted>|null  $event
      */
     public function __construct(
-        public readonly StateMachine       $stateMachine,
-        public readonly States|null        $from,
-        public readonly States             $to,
-        public readonly Model              $model,
-        public readonly string             $field,
+        public readonly States|null $from,
+        public readonly States $to,
+        public readonly Model $model,
+        public readonly string $field,
         public array|Arrayable|ArrayAccess $customProperties,
-        public readonly mixed              $responsible,
-        protected readonly array           $guards = [],
-        protected readonly array           $beforeActions = [],
-        protected readonly array           $afterActions = [],
-    )
-    {
+        public readonly mixed $responsible,
+        protected readonly array $guards = [],
+        protected readonly array $actions = [],
+        protected readonly ?string $event = null,
+    ) {
         $this->uuid = Str::uuid();
     }
 
@@ -101,15 +99,15 @@ class PendingTransition implements TransitionContract
     {
         $locked = $this->lock()->get();
 
-        if (!$locked) {
+        if (! $locked) {
             throw new StateLocked();
         }
 
-        if (!$this->checkGates()) {
+        if (! $this->checkGates()) {
             throw new AuthorizationException();
         }
 
-        if (!$this->checkGuards()) {
+        if (! $this->checkGuards()) {
             throw new TransitionGuardException("A guard canceled the transition from [{$this->from->value}] to [{$this->to->value}]");
         }
 
@@ -132,6 +130,9 @@ class PendingTransition implements TransitionContract
         return true;
     }
 
+    /**
+     * @return bool
+     */
     protected function checkGuards(): bool
     {
         // Collect guards
@@ -165,7 +166,7 @@ class PendingTransition implements TransitionContract
                     return $exception;
                 }
             })
-            ->reject(fn(mixed $result) => $result === true)
+            ->reject(fn (mixed $result) => $result === true)
             ->isEmpty();
     }
 
@@ -175,13 +176,13 @@ class PendingTransition implements TransitionContract
     protected function dispatchAction(): void
     {
 
-        if (count($this->beforeActions) === 0) {
+        if (count($this->actions) === 0) {
             $this->finishAction();
 
             return;
         }
 
-        collect($this->beforeActions)
+        collect($this->actions)
             ->each(function (OnTransition $onTransition) {
                 if ($onTransition->class === $this->to::class) {
                     $actionInstance = function ($model) use ($onTransition) {
@@ -205,6 +206,9 @@ class PendingTransition implements TransitionContract
             });
     }
 
+    /**
+     * @return void
+     */
     public function finishAction(): void
     {
         $this->model->{$this->field} = $this->to;
@@ -228,9 +232,16 @@ class PendingTransition implements TransitionContract
 
         $this->lock()->release();
 
+        if ($this->event != null) {
+            $this->event::dispatch($this);
+        }
+
         TransitionCompleted::dispatch($this);
     }
 
+    /**
+     * @return void
+     */
     public function failAction(): void
     {
         $this->pending = false;
@@ -240,7 +251,9 @@ class PendingTransition implements TransitionContract
         TransitionFailed::dispatch($this);
     }
 
-
+    /**
+     * @return TransitionContract
+     */
     public function toTransition(): TransitionContract
     {
         $properties = [
@@ -284,7 +297,6 @@ class PendingTransition implements TransitionContract
         return $transition;
     }
 
-
     public function isAsync(): bool
     {
         return $this->async;
@@ -305,12 +317,8 @@ class PendingTransition implements TransitionContract
         return app(TransitionRepository::class);
     }
 
-    /**
-     * @return Lock
-     */
     public function lock(): Lock
     {
         return $this->repository()->lock($this, $this->uuid);
     }
-
 }

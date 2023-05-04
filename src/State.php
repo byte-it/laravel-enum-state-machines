@@ -148,11 +148,8 @@ class State
     }
 
     /**
-     * @param States $to
-     * @param array $customProperties
-     * @param mixed $responsible
+     * @param  mixed  $responsible
      *
-     * @return TransitionContract|null
      * @throws BindingResolutionException
      * @throws TransitionGuardException
      * @throws TransitionNotAllowedException

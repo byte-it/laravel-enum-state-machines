@@ -1,7 +1,7 @@
 <?php
 
 use byteit\LaravelEnumStateMachines\OnTransition;
-use byteit\LaravelEnumStateMachines\StateMachine;
+use byteit\LaravelEnumStateMachines\StateMachineManager;
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\Guards\FalseGuard;
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\StateWithSyncAction;
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\TestState;
@@ -10,7 +10,7 @@ use function PHPUnit\Framework\assertEquals;
 use function PHPUnit\Framework\assertInstanceOf;
 
 it('should resolve guards', function () {
-    $machine = StateMachine::boot(TestState::class);
+    $machine = app(StateMachineManager::class)->make(TestState::class);
 
     $resolved = $machine->resolveGuards(TestState::Init, TestState::Guarded);
 
@@ -24,9 +24,9 @@ it('should resolve guards', function () {
 });
 
 it('should resolve before actions', function () {
-    $machine = StateMachine::boot(StateWithSyncAction::class);
+    $machine = app(StateMachineManager::class)->make(StateWithSyncAction::class);
 
-    $resolved = $machine->resolveBeforeAction(StateWithSyncAction::Created, StateWithSyncAction::InlineSyncAction);
+    $resolved = $machine->resolveActions(StateWithSyncAction::Created, StateWithSyncAction::InlineSyncAction);
 
     assertEquals(1, count($resolved));
 

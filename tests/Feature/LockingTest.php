@@ -1,6 +1,5 @@
 <?php
 
-
 use byteit\LaravelEnumStateMachines\Exceptions\StateLocked;
 use byteit\LaravelEnumStateMachines\Models\PendingTransition;
 use byteit\LaravelEnumStateMachines\StateMachine;
@@ -14,10 +13,6 @@ it('should fail if a lock for the state has already been acquired', function () 
     $repo = new TransitionRepository();
 
     $transition = new PendingTransition(
-        new StateMachine(
-            TestState::class,
-            TestState::Init,
-        ),
         TestState::Init,
         TestState::Intermediate,
         $model,
@@ -27,23 +22,17 @@ it('should fail if a lock for the state has already been acquired', function () 
         [],
     );
 
-
     $lock = $repo->lock($transition, Str::uuid());
     $lock->get();
 
-    expect(fn() => $transition->dispatch())->toThrow(StateLocked::class);
+    expect(fn () => $transition->dispatch())->toThrow(StateLocked::class);
 });
 
-
-it('should release the lock after the transition has been completed', function (){
+it('should release the lock after the transition has been completed', function () {
     $model = SalesOrder::factory()->create();
     $repo = new TransitionRepository();
 
     $transition = new PendingTransition(
-        new StateMachine(
-            TestState::class,
-            TestState::Init,
-        ),
         TestState::Init,
         TestState::Intermediate,
         $model,
@@ -60,6 +49,5 @@ it('should release the lock after the transition has been completed', function (
 });
 
 it('should release the lock if the transition fails');
-
 
 it('shouldn\'t acquire the lock before dispatching');

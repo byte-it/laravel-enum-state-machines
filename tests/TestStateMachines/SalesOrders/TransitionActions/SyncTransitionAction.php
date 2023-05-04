@@ -2,13 +2,14 @@
 
 namespace byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\TransitionActions;
 
+use byteit\LaravelEnumStateMachines\Attributes\Action;
 use byteit\LaravelEnumStateMachines\Attributes\Before;
 use byteit\LaravelEnumStateMachines\Jobs\Concerns\InteractsWithTransition;
 use byteit\LaravelEnumStateMachines\Tests\TestModels\SalesOrder;
 use byteit\LaravelEnumStateMachines\Tests\TestModels\SalesOrderWithBeforeTransitionHook;
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\StateWithSyncAction;
 
-#[Before(to: StateWithSyncAction::SyncAction)]
+#[Action(to: StateWithSyncAction::SyncAction)]
 class SyncTransitionAction
 {
     use InteractsWithTransition;
@@ -19,7 +20,7 @@ class SyncTransitionAction
     {
     }
 
-    public function __invoke(SalesOrderWithBeforeTransitionHook|SalesOrder $order)
+    public function __invoke(SalesOrderWithBeforeTransitionHook|SalesOrder $order): void
     {
         self::$invoked = true;
     }

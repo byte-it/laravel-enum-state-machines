@@ -3,7 +3,6 @@
 namespace byteit\LaravelEnumStateMachines;
 
 use byteit\LaravelEnumStateMachines\Commands\MakeStateMachine;
-use Spatie\LaravelPackageTools\Exceptions\InvalidPackage;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -22,6 +21,5 @@ class LaravelEnumStateMachinesServiceProvider extends PackageServiceProvider
             ->hasMigration('create_postponed_transitions_table')
             ->hasMigration('create_transitions_table')
             ->hasCommand(MakeStateMachine::class);
-
     }
 }
