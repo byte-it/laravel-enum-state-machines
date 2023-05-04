@@ -26,7 +26,7 @@ class StateMachineManager
     protected array $booted = [];
 
     /**
-     * @param class-string<States> $states
+     * @param  class-string<States>  $states
      */
     public function make(string $states): ?StateMachine
     {
@@ -64,8 +64,8 @@ class StateMachineManager
     protected function resolveGuardsStatic(ReflectionEnum $reflection): array
     {
         $guardClasses = collect($reflection->getAttributes(HasGuards::class))
-            ->map(fn(ReflectionAttribute $attribute) => $attribute->newInstance())
-            ->map(fn(HasGuards $instance) => $instance->classes)
+            ->map(fn (ReflectionAttribute $attribute) => $attribute->newInstance())
+            ->map(fn (HasGuards $instance) => $instance->classes)
             ->flatten();
 
         $classGuards = $guardClasses->map(function (string $class) {
@@ -78,7 +78,7 @@ class StateMachineManager
             return collect($reflection->getAttributes(Guards::class))
                 ->map(function (ReflectionAttribute $attribute) use ($class) {
                     $instance = $attribute->newInstance();
-                    if (!($instance instanceof Guards)) {
+                    if (! ($instance instanceof Guards)) {
                         return null;
                     }
 
@@ -94,7 +94,7 @@ class StateMachineManager
                 return collect($method->getAttributes(Guards::class))
                     ->map(function (ReflectionAttribute $attribute) use ($method) {
                         $instance = $attribute->newInstance();
-                        if (!($instance instanceof Guards)) {
+                        if (! ($instance instanceof Guards)) {
                             return null;
                         }
 
@@ -112,8 +112,8 @@ class StateMachineManager
     protected function resolveActionsStatic(ReflectionEnum $reflection): array
     {
         $actionClasses = collect($reflection->getAttributes(HasActions::class))
-            ->map(fn(ReflectionAttribute $attribute) => $attribute->newInstance())
-            ->map(fn(HasActions $instance) => $instance->classes)
+            ->map(fn (ReflectionAttribute $attribute) => $attribute->newInstance())
+            ->map(fn (HasActions $instance) => $instance->classes)
             ->flatten()
             ->map(function (string $class) {
                 try {
@@ -125,7 +125,7 @@ class StateMachineManager
                 return collect($reflection->getAttributes(Action::class))
                     ->map(function (ReflectionAttribute $attribute) use ($class, $reflection) {
                         $instance = $attribute->newInstance();
-                        if (!($instance instanceof Action)) {
+                        if (! ($instance instanceof Action)) {
                             return null;
                         }
                         $method = $reflection->hasMethod('handle') ? 'handle' : '__invoke';
@@ -142,7 +142,7 @@ class StateMachineManager
                 return collect($method->getAttributes(Action::class))
                     ->map(function (ReflectionAttribute $attribute) use ($method) {
                         $instance = $attribute->newInstance();
-                        if (!($instance instanceof Action)) {
+                        if (! ($instance instanceof Action)) {
                             return null;
                         }
 
@@ -166,7 +166,7 @@ class StateMachineManager
             ->mapWithKeys(function (ReflectionEnumBackedCase $caseReflection) {
                 $instance = Arr::first($caseReflection->getAttributes(Event::class))?->newInstance();
 
-                if (!($instance instanceof Event)) {
+                if (! ($instance instanceof Event)) {
                     return [];
                 }
 

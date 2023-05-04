@@ -1,12 +1,12 @@
 <?php
 
 namespace byteit\LaravelEnumStateMachines\Tests\Feature;
-use byteit\LaravelEnumStateMachines\StateMachineManager;
+
 use byteit\LaravelEnumStateMachines\Exceptions\TransitionGuardException;
 use byteit\LaravelEnumStateMachines\Exceptions\TransitionNotAllowedException;
 use byteit\LaravelEnumStateMachines\Models\PostponedTransition;
 use byteit\LaravelEnumStateMachines\State;
-use byteit\LaravelEnumStateMachines\StateMachine;
+use byteit\LaravelEnumStateMachines\StateMachineManager;
 use byteit\LaravelEnumStateMachines\Tests\TestModels\SalesManager;
 use byteit\LaravelEnumStateMachines\Tests\TestModels\SalesOrder;
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\StateWithAsyncAction;

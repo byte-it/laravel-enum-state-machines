@@ -130,9 +130,6 @@ class PendingTransition implements TransitionContract
         return true;
     }
 
-    /**
-     * @return bool
-     */
     protected function checkGuards(): bool
     {
         // Collect guards
@@ -206,9 +203,6 @@ class PendingTransition implements TransitionContract
             });
     }
 
-    /**
-     * @return void
-     */
     public function finishAction(): void
     {
         $this->model->{$this->field} = $this->to;
@@ -239,9 +233,6 @@ class PendingTransition implements TransitionContract
         TransitionCompleted::dispatch($this);
     }
 
-    /**
-     * @return void
-     */
     public function failAction(): void
     {
         $this->pending = false;
@@ -251,9 +242,6 @@ class PendingTransition implements TransitionContract
         TransitionFailed::dispatch($this);
     }
 
-    /**
-     * @return TransitionContract
-     */
     public function toTransition(): TransitionContract
     {
         $properties = [

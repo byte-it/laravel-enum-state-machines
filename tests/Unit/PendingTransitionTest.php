@@ -1,12 +1,10 @@
 <?php
 
 use byteit\LaravelEnumStateMachines\Models\PendingTransition;
-use byteit\LaravelEnumStateMachines\StateMachine;
 use byteit\LaravelEnumStateMachines\Tests\TestModels\SalesOrder;
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\TestState;
 use byteit\LaravelEnumStateMachines\TransitionRepository;
 use Illuminate\Support\Str;
-use byteit\LaravelEnumStateMachines\StateMachineManager;
 
 it('can be serialized', function () {
 

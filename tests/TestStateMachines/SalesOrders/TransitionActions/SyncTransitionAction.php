@@ -3,7 +3,6 @@
 namespace byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\TransitionActions;
 
 use byteit\LaravelEnumStateMachines\Attributes\Action;
-use byteit\LaravelEnumStateMachines\Attributes\Before;
 use byteit\LaravelEnumStateMachines\Jobs\Concerns\InteractsWithTransition;
 use byteit\LaravelEnumStateMachines\Tests\TestModels\SalesOrder;
 use byteit\LaravelEnumStateMachines\Tests\TestModels\SalesOrderWithBeforeTransitionHook;

@@ -6,5 +6,4 @@ use byteit\LaravelEnumStateMachines\Events\TransitionCompleted;
 
 class IntermediateCompleted extends TransitionCompleted
 {
-
 }

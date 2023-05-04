@@ -2,11 +2,9 @@
 
 use byteit\LaravelEnumStateMachines\Jobs\TransitionActionExecutor;
 use byteit\LaravelEnumStateMachines\Models\PendingTransition;
-use byteit\LaravelEnumStateMachines\StateMachine;
 use byteit\LaravelEnumStateMachines\Tests\TestModels\SalesOrder;
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\StateWithAsyncAction;
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\TransitionActions\QueuedTransitionAction;
-use byteit\LaravelEnumStateMachines\StateMachineManager;
 
 it('should call the failed method of the action if it exists',
     function () {

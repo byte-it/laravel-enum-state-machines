@@ -1,11 +1,10 @@
 <?php
 
-use byteit\LaravelEnumStateMachines\StateMachine;
+use byteit\LaravelEnumStateMachines\StateMachineManager;
 use byteit\LaravelEnumStateMachines\Tests\Fixutres\Events\IntermediateCompleted;
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\StateWithSyncAction;
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\TestState;
 use function PHPUnit\Framework\assertEquals;
-use byteit\LaravelEnumStateMachines\StateMachineManager;
 
 it('resolves all guards', function () {
     $machine = app(StateMachineManager::class)->make(TestState::class);
