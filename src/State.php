@@ -178,7 +178,7 @@ class State
         States $state,
         Carbon $when,
         array $customProperties = [],
-        $responsible = null
+        mixed $responsible = null
     ): ?PostponedTransition {
         return $this->stateMachine->postponeTransitionTo(
             $this->model,
