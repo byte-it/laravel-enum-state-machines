@@ -123,7 +123,7 @@ class State
 
     public function history(): MorphMany
     {
-        return $this->model->stateHistory()->forField($this->field);
+        return $this->model->transitions()->forField($this->field);
     }
 
     public function canBe(States $state): bool
