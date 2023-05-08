@@ -23,7 +23,6 @@ use TypeError;
  *
  * @template TStates of States
  *
- *
  * @property Model&HasStateMachines $model
  */
 class State
@@ -42,16 +41,15 @@ class State
     protected string $field;
 
     /**
-     * @param class-string<States> $stateClass
+     * @param  class-string<States>  $stateClass
      */
     public function __construct(
-        string       $stateClass,
-        ?States      $state,
-        Model        $model,
-        string       $field,
+        string $stateClass,
+        ?States $state,
+        Model $model,
+        string $field,
         StateMachine $stateMachine
-    )
-    {
+    ) {
         $this->stateClass = $stateClass;
         $this->state = $state;
         $this->model = $model;
@@ -80,7 +78,7 @@ class State
     {
         $this->assertStateClass($state);
 
-        return !$this->is($state);
+        return ! $this->is($state);
     }
 
     public function was(States $state): bool
@@ -158,12 +156,12 @@ class State
     public function transitions(): array
     {
         return collect($this->state::cases())
-            ->map(fn(States $states) => $states->transitions())
+            ->map(fn (States $states) => $states->transitions())
             ->all();
     }
 
     /**
-     * @param mixed $responsible
+     * @param  mixed  $responsible
      *
      * @throws BindingResolutionException
      * @throws TransitionGuardException
@@ -172,10 +170,9 @@ class State
      */
     public function transitionTo(
         States $to,
-        array  $customProperties = [],
-        mixed  $responsible = null
-    ): ?TransitionContract
-    {
+        array $customProperties = [],
+        mixed $responsible = null
+    ): ?TransitionContract {
         return $this->stateMachine->transitionTo(
             $this->model,
             $this->field,
@@ -187,18 +184,17 @@ class State
     }
 
     /**
-     * @param null $responsible
+     * @param  null  $responsible
      *
      * @throws TransitionNotAllowedException
      */
     public function postponeTransitionTo(
         States $state,
         Carbon $when,
-        array  $customProperties = [],
-        mixed  $responsible = null,
-        bool   $skipAssertion = false,
-    ): ?PostponedTransition
-    {
+        array $customProperties = [],
+        mixed $responsible = null,
+        bool $skipAssertion = false,
+    ): ?PostponedTransition {
         return $this->stateMachine->postponeTransitionTo(
             $this->model,
             $this->field,
@@ -233,12 +229,12 @@ class State
 
     protected function assertStateClass(mixed $state): void
     {
-        if (!($state instanceof $this->state)) {
+        if (! ($state instanceof $this->state)) {
             throw new TypeError(sprintf(
-                    '$state must be of type %s, instead %s  was given.',
-                    $this->state::class,
-                    $state::class
-                )
+                '$state must be of type %s, instead %s  was given.',
+                $this->state::class,
+                $state::class
+            )
             );
         }
     }

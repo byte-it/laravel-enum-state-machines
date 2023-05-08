@@ -1,6 +1,5 @@
 <?php
 
-
 use byteit\LaravelEnumStateMachines\Tests\TestModels\SalesOrder;
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\TestState;
 
@@ -10,7 +9,6 @@ it('has postponed transitions', function (SalesOrder $salesOrder) {
     expect($salesOrder->state()->hasPostponedTransitions())->toBeTrue();
 })->with('salesOrder');
 
-
 it('can get postponed transitions', function (SalesOrder $salesOrder) {
     $salesOrder->state()->postponeTransitionTo(TestState::Intermediate, now());
 
@@ -18,7 +16,6 @@ it('can get postponed transitions', function (SalesOrder $salesOrder) {
 
     expect($transitions->first()->to)->toEqual(TestState::Intermediate);
 })->with('salesOrder');
-
 
 it('can have multiple postponed transitions', function (SalesOrder $salesOrder) {
     $salesOrder->state()->postponeTransitionTo(TestState::Intermediate, now());

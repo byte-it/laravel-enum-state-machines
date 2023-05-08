@@ -10,7 +10,6 @@ use byteit\LaravelEnumStateMachines\StateMachineManager;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -44,7 +43,7 @@ trait HasStateMachines
                         return;
                     }
 
-                    if (!$stateMachine->recordHistory()) {
+                    if (! $stateMachine->recordHistory()) {
                         return;
                     }
 
@@ -86,7 +85,7 @@ trait HasStateMachines
 
                 $state = $this->$camelField();
 
-                if (!($state instanceof State)) {
+                if (! ($state instanceof State)) {
                     throw new Exception('');
                 }
 
@@ -97,15 +96,14 @@ trait HasStateMachines
     }
 
     /**
-     * @param class-string<States> $states
+     * @param  class-string<States>  $states
      *
      * @throws BindingResolutionException
      */
     protected function stateMachine(
         string $states,
         string $attribute,
-    ): State
-    {
+    ): State {
         $stateMachine = app(StateMachineManager::class)->make($states);
 
         return new State(
@@ -131,7 +129,7 @@ trait HasStateMachines
     {
         return $this
             ->morphOne(PostponedTransition::class, 'model')
-            ->ofMany( 'transition_at','MIN')
+            ->ofMany('transition_at', 'MIN')
             ->whereNull('applied_at');
     }
 
@@ -150,17 +148,16 @@ trait HasStateMachines
     }
 
     /**
-     * @param null $responsible
+     * @param  null  $responsible
      */
     public function recordState(
-        string  $field,
+        string $field,
         ?States $from,
-        States  $to,
-        array   $customProperties = [],
-                $responsible = null,
-        array   $changedAttributes = []
-    ): Transition|bool
-    {
+        States $to,
+        array $customProperties = [],
+        $responsible = null,
+        array $changedAttributes = []
+    ): Transition|bool {
         $stateHistory = Transition::make([
             'field' => $field,
             'from' => $from,
@@ -178,18 +175,17 @@ trait HasStateMachines
     }
 
     /**
-     * @param \Illuminate\Support\Carbon $when
-     * @param mixed $responsible
+     * @param  \Illuminate\Support\Carbon  $when
+     * @param  mixed  $responsible
      */
     public function recordPostponedTransition(
-        string  $field,
+        string $field,
         ?States $from,
-        States  $to,
-        Carbon  $when,
-        array   $customProperties = [],
-        mixed   $responsible = null
-    ): PostponedTransition|bool
-    {
+        States $to,
+        Carbon $when,
+        array $customProperties = [],
+        mixed $responsible = null
+    ): PostponedTransition|bool {
         $postponedTransition = new PostponedTransition([
             'field' => $field,
             'from' => $from,
