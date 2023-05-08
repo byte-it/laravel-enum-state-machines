@@ -21,6 +21,5 @@ it('resolves all before actions', function () {
 it('resolves all events', function () {
     $machine = app(StateMachineManager::class)->make(TestState::class);
 
-    ray($machine->events);
     expect($machine->events)->toEqual(['intermediate' => IntermediateCompleted::class]);
 });

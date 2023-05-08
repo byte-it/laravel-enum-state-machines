@@ -37,17 +37,18 @@ class StateMachine
     public array $events = [];
 
     /**
-     * @param  class-string<States>  $states The States enum class
-     * @param  array<string, class-string<TransitionCompleted>>  $events
+     * @param class-string<States> $states The States enum class
+     * @param array<string, class-string<TransitionCompleted>> $events
      */
     public function __construct(
         string $states,
         States $initialState,
-        array $guards = [],
-        array $actions = [],
-        array $events = [],
-        bool $recordHistory = true,
-    ) {
+        array  $guards = [],
+        array  $actions = [],
+        array  $events = [],
+        bool   $recordHistory = true,
+    )
+    {
 
         $this->states = $states;
         $this->initialState = $initialState;
@@ -64,7 +65,8 @@ class StateMachine
     public function canBe(
         States $from,
         States $to
-    ): bool {
+    ): bool
+    {
         return in_array($to, $from->transitions(), true);
     }
 
@@ -74,8 +76,9 @@ class StateMachine
     public function assertCanBe(
         States $from,
         States $to
-    ): void {
-        if (! $this->canBe($from, $to)) {
+    ): void
+    {
+        if (!$this->canBe($from, $to)) {
             throw new TransitionNotAllowedException("Transition from [$from->value] to [$to->value] on [$this->states] is illegal");
         }
     }
@@ -88,13 +91,14 @@ class StateMachine
      * @throws Exceptions\StateLocked
      */
     public function transitionTo(
-        Model $model,
+        Model  $model,
         string $field,
         States $from,
         States $to,
-        array $customProperties = [],
-        mixed $responsible = null
-    ): ?TransitionContract {
+        array  $customProperties = [],
+        mixed  $responsible = null
+    ): ?TransitionContract
+    {
 
         $this->assertCanBe($from, $to);
 
@@ -124,21 +128,24 @@ class StateMachine
 
     /**
      * @param (Model&HasStateMachines) $model
-     * @param  null  $responsible
+     * @param null $responsible
      *
      * @throws TransitionNotAllowedException
      */
     public function postponeTransitionTo(
-        Model $model,
+        Model  $model,
         string $field,
         States $from,
         States $to,
         Carbon $when,
-        array $customProperties = [],
-        $responsible = null
-    ): ?PostponedTransition {
+        array  $customProperties = [],
+        mixed  $responsible = null,
+        bool   $skipAssertion = false,
+    ): ?PostponedTransition
+    {
 
-        $this->assertCanBe($from, $to);
+        if (!$skipAssertion)
+            $this->assertCanBe($from, $to);
 
         $transition = $this
             ->makeTransition($model, $field, $from, $to, $customProperties, $responsible)
@@ -170,7 +177,7 @@ class StateMachine
     public function resolveGuards(States $from, States $to): array
     {
         return collect($this->guards)
-            ->filter(fn (OnTransition $onTransition) => $onTransition->applies($from, $to))->all();
+            ->filter(fn(OnTransition $onTransition) => $onTransition->applies($from, $to))->all();
     }
 
     /**
@@ -179,20 +186,21 @@ class StateMachine
     public function resolveActions(States $from, States $to): array
     {
         return collect($this->actions)
-            ->filter(fn (OnTransition $onTransition) => $onTransition->applies($from, $to))->all();
+            ->filter(fn(OnTransition $onTransition) => $onTransition->applies($from, $to))->all();
     }
 
     /**
-     * @param  mixed  $responsible
+     * @param mixed $responsible
      */
     protected function makeTransition(
-        Model $model,
+        Model  $model,
         string $field,
         States $from,
         States $to,
-        mixed $customProperties,
-        mixed $responsible = null
-    ): PendingTransition {
+        mixed  $customProperties,
+        mixed  $responsible = null
+    ): PendingTransition
+    {
         $responsible = $responsible ?? auth()->user();
 
         return new PendingTransition(

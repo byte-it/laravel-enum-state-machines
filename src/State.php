@@ -4,14 +4,17 @@ namespace byteit\LaravelEnumStateMachines;
 
 use byteit\LaravelEnumStateMachines\Contracts\States;
 use byteit\LaravelEnumStateMachines\Contracts\Transition as TransitionContract;
+use byteit\LaravelEnumStateMachines\Exceptions\StateLocked;
 use byteit\LaravelEnumStateMachines\Exceptions\TransitionGuardException;
 use byteit\LaravelEnumStateMachines\Exceptions\TransitionNotAllowedException;
 use byteit\LaravelEnumStateMachines\Models\PostponedTransition;
 use byteit\LaravelEnumStateMachines\Models\Transition;
+use byteit\LaravelEnumStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Collection;
 use TypeError;
 
@@ -19,6 +22,9 @@ use TypeError;
  * Represents the current state for the field and state machine
  *
  * @template TStates of States
+ *
+ *
+ * @property Model&HasStateMachines $model
  */
 class State
 {
@@ -26,6 +32,9 @@ class State
 
     public ?States $state;
 
+    /**
+     * @var Model&HasStateMachines
+     */
     protected Model $model;
 
     public StateMachine $stateMachine;
@@ -33,15 +42,16 @@ class State
     protected string $field;
 
     /**
-     * @param  class-string<States>  $stateClass
+     * @param class-string<States> $stateClass
      */
     public function __construct(
-        string $stateClass,
-        ?States $state,
-        Model $model,
-        string $field,
+        string       $stateClass,
+        ?States      $state,
+        Model        $model,
+        string       $field,
         StateMachine $stateMachine
-    ) {
+    )
+    {
         $this->stateClass = $stateClass;
         $this->state = $state;
         $this->model = $model;
@@ -70,7 +80,7 @@ class State
     {
         $this->assertStateClass($state);
 
-        return ! $this->is($state);
+        return !$this->is($state);
     }
 
     public function was(States $state): bool
@@ -130,6 +140,11 @@ class State
         return $this->model->postponedTransitions()->forField($this->field);
     }
 
+    public function nextPostponedTransition(): MorphOne
+    {
+        return $this->model->nextPostponedTransition()->forField($this->field);
+    }
+
     public function hasPostponedTransitions(): bool
     {
         return $this->postponedTransitions()->notApplied()->exists();
@@ -143,22 +158,24 @@ class State
     public function transitions(): array
     {
         return collect($this->state::cases())
-            ->map(fn (States $states) => $states->transitions())
+            ->map(fn(States $states) => $states->transitions())
             ->all();
     }
 
     /**
-     * @param  mixed  $responsible
+     * @param mixed $responsible
      *
      * @throws BindingResolutionException
      * @throws TransitionGuardException
      * @throws TransitionNotAllowedException
+     * @throws StateLocked
      */
     public function transitionTo(
         States $to,
-        array $customProperties = [],
-        mixed $responsible = null
-    ): ?TransitionContract {
+        array  $customProperties = [],
+        mixed  $responsible = null
+    ): ?TransitionContract
+    {
         return $this->stateMachine->transitionTo(
             $this->model,
             $this->field,
@@ -170,16 +187,18 @@ class State
     }
 
     /**
-     * @param  null  $responsible
+     * @param null $responsible
      *
      * @throws TransitionNotAllowedException
      */
     public function postponeTransitionTo(
         States $state,
         Carbon $when,
-        array $customProperties = [],
-        mixed $responsible = null
-    ): ?PostponedTransition {
+        array  $customProperties = [],
+        mixed  $responsible = null,
+        bool   $skipAssertion = false,
+    ): ?PostponedTransition
+    {
         return $this->stateMachine->postponeTransitionTo(
             $this->model,
             $this->field,
@@ -187,7 +206,8 @@ class State
             $state,
             $when,
             $customProperties,
-            $responsible
+            $responsible,
+            $skipAssertion
         );
     }
 
@@ -213,12 +233,12 @@ class State
 
     protected function assertStateClass(mixed $state): void
     {
-        if (! ($state instanceof $this->state)) {
+        if (!($state instanceof $this->state)) {
             throw new TypeError(sprintf(
-                '$state must be of type %s, instead %s  was given.',
-                $this->state::class,
-                $state::class
-            )
+                    '$state must be of type %s, instead %s  was given.',
+                    $this->state::class,
+                    $state::class
+                )
             );
         }
     }
