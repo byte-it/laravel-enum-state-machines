@@ -115,22 +115,23 @@ trait HasStateMachines
         );
     }
 
-    public function stateHistory(): MorphMany
+    public function transitions(): MorphMany
     {
         return $this->morphMany(Transition::class, 'model');
     }
 
     public function postponedTransitions(): MorphMany
     {
-        return $this->morphMany(PostponedTransition::class, 'model');
+        return $this
+            ->morphMany(PostponedTransition::class, 'model')
+            ->whereNull('applied_at');
     }
 
     public function nextPostponedTransition(): MorphOne
     {
         return $this
             ->morphOne(PostponedTransition::class, 'model')
-            ->ofMany('transition_at', 'MIN')
-            ->whereNull('applied_at');
+            ->ofMany( 'transition_at','MIN');
     }
 
     public function getChangedAttributes(): array
@@ -171,7 +172,7 @@ trait HasStateMachines
             $stateHistory->responsible()->associate($responsible);
         }
 
-        return $this->stateHistory()->save($stateHistory);
+        return $this->transitions()->save($stateHistory);
     }
 
     /**
