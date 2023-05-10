@@ -131,7 +131,7 @@ trait HasStateMachines
     {
         return $this
             ->morphOne(PostponedTransition::class, 'model')
-            ->ofMany(['transition_at' => 'MIN'], function ($builder){
+            ->ofMany(['transition_at' => 'MIN'], function ($builder) {
                 $builder->whereNull('applied_at');
             });
     }
