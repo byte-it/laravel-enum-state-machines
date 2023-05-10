@@ -20,12 +20,9 @@ class PostponedTransition extends AbstractTransition implements TransitionContra
     protected $guarded = [];
 
     protected $casts = [
-        'custom_properties' => 'array',
-    ];
-
-    protected $dates = [
         'transition_at' => 'date',
         'applied_at' => 'date',
+        'custom_properties' => 'array',
     ];
 
     public function scopeNotApplied($query): void
