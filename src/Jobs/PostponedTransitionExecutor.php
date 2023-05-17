@@ -12,6 +12,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Throwable;
 
 class PostponedTransitionExecutor implements ShouldQueue
 {
@@ -25,8 +26,8 @@ class PostponedTransitionExecutor implements ShouldQueue
     }
 
     /**
-     * @throws StateLockedException
-     * @throws TransitionGuardException
+     * @param TransitionDispatcher $dispatcher
+     * @throws Throwable
      */
     public function handle(TransitionDispatcher $dispatcher): void
     {

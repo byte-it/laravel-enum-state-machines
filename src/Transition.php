@@ -15,7 +15,7 @@ use Throwable;
 class Transition
 {
     use InteractsWithQueue,
-        InteractsWithTransition,
+
         Queueable,
         Dispatchable;
 
@@ -76,9 +76,6 @@ class Transition
         }
     }
 
-    public function failed(Throwable $throwable): void
-    {
-    }
 
     public function applies(?States $from, States $to): bool
     {

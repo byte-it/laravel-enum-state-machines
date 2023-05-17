@@ -67,7 +67,7 @@ it('is async', function () {
         null,
         new AsyncTransition(),
     );
-    expect($transition->isAsync())
+    expect($transition->shouldQueue())
         ->toBeTrue();
 });
 
@@ -93,7 +93,7 @@ it('can fail', function () {
         ->and($transition->isPending())
         ->toBeFalse()
         ->and($failed)
-        ->toBeInstanceOf(FailedTransition::class);
+        ->toBeInstanceOf(PendingTransition::class);
 });
 
 it('can finish', function () {

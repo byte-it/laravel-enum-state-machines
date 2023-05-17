@@ -3,52 +3,43 @@
 namespace byteit\LaravelEnumStateMachines;
 
 use byteit\LaravelEnumStateMachines\Contracts\Transition as TransitionContract;
-use byteit\LaravelEnumStateMachines\Events\TransitionStarted;
 use byteit\LaravelEnumStateMachines\Exceptions\StateLockedException;
 use byteit\LaravelEnumStateMachines\Exceptions\TransitionGuardException;
-use byteit\LaravelEnumStateMachines\Jobs\TransitionActionExecutor;
-use Illuminate\Contracts\Bus\Dispatcher;
+use Illuminate\Contracts\Bus\QueueingDispatcher;
 use Throwable;
 
 class TransitionDispatcher
 {
-    protected Dispatcher $dispatcher;
+    protected QueueingDispatcher $dispatcher;
 
     protected TransitionRepository $repository;
 
-    public function __construct(Dispatcher $dispatcher, TransitionRepository $repository)
+    public function __construct(QueueingDispatcher $dispatcher, TransitionRepository $repository)
     {
         $this->dispatcher = $dispatcher;
         $this->repository = $repository;
     }
 
     /**
-     * @throws TransitionGuardException
-     * @throws StateLockedException
+     * @throws Throwable
      */
     public function dispatch(PendingTransition $transition): TransitionContract
     {
-        $this->checkGuard($transition);
-
-        $this->lock($transition);
-
-        $transition->gatherChangedAttributes();
-
-        TransitionStarted::dispatch($transition);
-
-        $executor = new TransitionActionExecutor($transition);
 
         try {
-            $dispatch = match ($transition->isAsync()) {
-                true => $this->dispatcher->dispatch($executor),
-                false => app()->call([$executor, 'handle']),
+            $dispatch = match ($transition->shouldQueue()) {
+                true => $this->dispatcher->dispatchToQueue($transition),
+                false => $transition->handle(),
             };
 
             if ($dispatch instanceof TransitionContract) {
                 return $dispatch;
             }
+        }
+        catch (StateLockedException|TransitionGuardException $e){
+            throw $e;
         } catch (Throwable $e) {
-            return $transition->failed($e);
+            return $transition->failed($e, $transition->shouldQueue());
         }
 
         return $transition;
@@ -61,7 +52,7 @@ class TransitionDispatcher
     {
         $lock = $this->repository->lock($transition);
 
-        if (! $lock->get()) {
+        if (!$lock->get()) {
             throw new StateLockedException();
         }
     }
@@ -77,7 +68,7 @@ class TransitionDispatcher
             throw new TransitionGuardException(previous: $e);
         }
 
-        if (! $result) {
+        if (!$result) {
             throw new TransitionGuardException();
         }
     }

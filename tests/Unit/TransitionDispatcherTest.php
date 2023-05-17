@@ -9,6 +9,7 @@ use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\TestStat
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\Transitions\WithQueuedAction;
 use byteit\LaravelEnumStateMachines\Transition;
 use byteit\LaravelEnumStateMachines\TransitionDispatcher;
+use Illuminate\Foundation\Bus\PendingDispatch;
 use Illuminate\Support\Facades\Queue;
 
 it('can execute a sync action', function (SalesOrder $order) {
@@ -36,7 +37,7 @@ it('can dispatch an async action', function (SalesOrder $order) {
         WithQueuedAction::make()
     );
 
-    Queue::fake([TransitionActionExecutor::class]);
+    Queue::fake();
 
     $dispatcher = app(TransitionDispatcher::class);
     /** @var PendingTransition $dispatched */
@@ -45,7 +46,7 @@ it('can dispatch an async action', function (SalesOrder $order) {
     expect($dispatched)
         ->toBeInstanceOf(PendingTransition::class)
         ->and($dispatched->isPending())->toBeTrue()
-        ->and(Queue::hasPushed(TransitionActionExecutor::class))->toBeTrue();
+        ->and(Queue::hasPushed(PendingTransition::class))->toBeTrue();
 
 })->with('salesOrder');
 

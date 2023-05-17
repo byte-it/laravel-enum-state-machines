@@ -7,19 +7,29 @@ use byteit\LaravelEnumStateMachines\Contracts\States;
 use byteit\LaravelEnumStateMachines\Contracts\Transition as TransitionContract;
 use byteit\LaravelEnumStateMachines\Events\TransitionCompleted;
 use byteit\LaravelEnumStateMachines\Events\TransitionFailed;
+use byteit\LaravelEnumStateMachines\Events\TransitionStarted;
+use byteit\LaravelEnumStateMachines\Exceptions\StateLockedException;
+use byteit\LaravelEnumStateMachines\Exceptions\TransitionGuardException;
 use byteit\LaravelEnumStateMachines\Models\FailedTransition;
 use byteit\LaravelEnumStateMachines\Models\PastTransition;
 use byteit\LaravelEnumStateMachines\Models\PostponedTransition;
 use Carbon\Carbon;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\Job;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Str;
 use Throwable;
 
 class PendingTransition implements TransitionContract
 {
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
     use SerializesModels;
 
     public string $uuid;
@@ -37,20 +47,53 @@ class PendingTransition implements TransitionContract
     protected array $changes = [];
 
     public function __construct(
-        public readonly States|null $from,
-        public readonly States $to,
-        public readonly Model $model,
-        public readonly string $field,
+        public readonly States|null        $from,
+        public readonly States             $to,
+        public readonly Model              $model,
+        public readonly string             $field,
         public array|Arrayable|ArrayAccess $customProperties,
-        public readonly mixed $responsible,
-        public readonly Transition $definition,
-        ?string $uuid = null,
-    ) {
+        public readonly mixed              $responsible,
+        public readonly Transition         $definition,
+        ?string                            $uuid = null,
+    )
+    {
         $this->uuid = $uuid ?? Str::uuid();
 
         if ($this->definition instanceof ShouldQueue) {
             $this->async = true;
         }
+    }
+
+    /**
+     * @throws TransitionGuardException
+     * @throws StateLockedException
+     */
+    public function handle(): TransitionContract
+    {
+        try {
+            $result = $this->definition->checkGuard($this);
+        } catch (Throwable $e) {
+            throw new TransitionGuardException(previous: $e);
+        }
+        if (!$result) {
+            throw new TransitionGuardException();
+        }
+
+        $this->getLock();
+
+        $this->gatherChangedAttributes();
+
+        TransitionStarted::dispatch($this);
+
+        $action = $this->definition;
+
+        if ($this->job instanceof Job) {
+            $action->setJob($this->job);
+        }
+
+        $action->handle($this);
+
+        return $this->finished();
     }
 
     /**
@@ -97,21 +140,25 @@ class PendingTransition implements TransitionContract
         return $record;
     }
 
-    public function failed(Throwable $e): TransitionContract
+    public function failed(Throwable $e, bool $record = true): TransitionContract
     {
         $this->pending = false;
         $this->failed = true;
         $this->throwable = $e;
 
-        $record = $this->toTransition();
+        $this->releaseLock();
 
-        if ($record instanceof FailedTransition) {
-            $record->save();
+        if ($record) {
+            $recorded = $this->toTransition();
 
-            TransitionFailed::dispatch($record);
+            if ($recorded instanceof FailedTransition) {
+                $recorded->save();
+            }
         }
 
-        return $record;
+        TransitionFailed::dispatch($this);
+
+        return $this;
     }
 
     public function toTransition(): TransitionContract
@@ -181,7 +228,7 @@ class PendingTransition implements TransitionContract
         return $this->postponedTo !== null;
     }
 
-    public function isAsync(): bool
+    public function shouldQueue(): bool
     {
         return $this->async;
     }
@@ -237,10 +284,24 @@ class PendingTransition implements TransitionContract
         );
     }
 
-    protected function releaseLock(): bool
+    /**
+     * @throws StateLockedException
+     */
+    public function getLock(): void
+    {
+        $lock = app(TransitionRepository::class)
+            ->lock($this);
+
+        if (!$lock->get()) {
+            throw new StateLockedException();
+        }
+    }
+
+    public function releaseLock(): bool
     {
         return app(TransitionRepository::class)
             ->lock($this)
             ->release();
     }
+
 }
