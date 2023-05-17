@@ -8,12 +8,12 @@ Define DFA like state machines for your eloquent models, keep track of changes a
 - [x] Allow additional properties to be applied to transitions
 - [x] Postpone transitions
 - [x] Guards for transition
-- [ ] General events before/after each transition via named event
+- [x] General events before/after each transition via named event
 - [x] Events for each transition like eloquent models
 - [x] Actions for defined transitions
 - [x] Action auto discovery + caching
 - [ ] Gates to authorize transitions
-- [ ] Pending/Running Transitions + lock any transition till the pending is performed or aborted
+- [x] Pending/Running Transitions + lock any transition till the pending is performed or aborted
 - [x] Create common interface for past, pending and postponed transitions
 - [ ] Add method to get all past/pending/postponed transitions
 - [ ] Add loop handling to represent model updates

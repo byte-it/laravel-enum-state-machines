@@ -32,13 +32,15 @@ class TestCase extends Orchestra
     {
         config()->set('database.default', 'testing');
 
-        include_once __DIR__.'/../database/migrations/create_transitions_table.php.stub';
+        include_once __DIR__.'/../database/migrations/create_past_transitions_table.php.stub';
         include_once __DIR__.'/../database/migrations/create_postponed_transitions_table.php.stub';
+        include_once __DIR__.'/../database/migrations/create_failed_transitions_table.php.stub';
 
         include_once __DIR__.'/database/migrations/create_sales_orders_table.php';
         include_once __DIR__.'/database/migrations/create_sales_managers_table.php';
 
-        (new \CreateTransitionsTable())->up();
+        (new \CreatePastTransitionsTable())->up();
+        (new \CreateFailedTransitionsTable())->up();
         (new \CreatePostponedTransitionsTable())->up();
         (new \CreateSalesOrdersTable())->up();
         (new \CreateSalesManagersTable())->up();

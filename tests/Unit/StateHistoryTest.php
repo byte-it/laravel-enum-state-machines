@@ -1,12 +1,12 @@
 <?php
 
-use byteit\LaravelEnumStateMachines\Models\Transition;
+use byteit\LaravelEnumStateMachines\Models\PastTransition;
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\TestState;
 
 it('can get custom property', function () {
     //Arrange
     $comments = 'Test comment';
-    $transition = Transition::factory()->create([
+    $transition = PastTransition::factory()->create([
         'from' => TestState::Init,
         'to' => TestState::Intermediate,
         'states' => TestState::class,
@@ -33,7 +33,7 @@ it('can get all custom properties', function (): void {
         'approved_by' => 1,
     ];
 
-    $transition = Transition::factory()->create([
+    $transition = PastTransition::factory()->create([
         'from' => TestState::Init,
         'to' => TestState::Intermediate,
         'field' => 'field',

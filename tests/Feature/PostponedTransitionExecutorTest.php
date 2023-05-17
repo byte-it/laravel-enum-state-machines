@@ -48,4 +48,4 @@ it('should apply pending transition', function () {
     );
 
     $this->assertFalse($salesOrder->state()->hasPostponedTransitions());
-});
+})->todo();

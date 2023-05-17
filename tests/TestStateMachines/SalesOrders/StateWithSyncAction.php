@@ -2,16 +2,11 @@
 
 namespace byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders;
 
-use byteit\LaravelEnumStateMachines\Attributes\Action;
-use byteit\LaravelEnumStateMachines\Attributes\HasActions;
 use byteit\LaravelEnumStateMachines\Attributes\RecordHistory;
 use byteit\LaravelEnumStateMachines\Contracts\States;
-use byteit\LaravelEnumStateMachines\Tests\TestModels\SalesOrderWithBeforeTransitionHook;
-use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\TransitionActions\SyncTransitionAction;
 
 #[
     RecordHistory,
-    HasActions([SyncTransitionAction::class])
 ]
 enum StateWithSyncAction: string implements States
 {
@@ -27,11 +22,5 @@ enum StateWithSyncAction: string implements States
             self::Created => [self::SyncAction, self::InlineSyncAction],
             default => [],
         };
-    }
-
-    #[Action(to: self::InlineSyncAction)]
-    public function inlineSyncActionHandler(SalesOrderWithBeforeTransitionHook $order): void
-    {
-        $order->notes = 'inlineSync';
     }
 }

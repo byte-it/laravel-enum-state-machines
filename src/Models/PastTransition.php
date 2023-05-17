@@ -3,17 +3,17 @@
 namespace byteit\LaravelEnumStateMachines\Models;
 
 use byteit\LaravelEnumStateMachines\Contracts\Transition as TransitionContract;
-use byteit\LaravelEnumStateMachines\Database\Factories\TransitionFactory;
+use byteit\LaravelEnumStateMachines\Database\Factories\PastTransitionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class Transition
  *
  *
- * @method static Transition make(array $attributes)
- * @method static TransitionFactory factory($count = null, $state = [])
+ * @method static PastTransition make(array $attributes)
+ * @method static PastTransitionFactory factory($count = null, $state = [])
  */
-class Transition extends AbstractTransition implements TransitionContract
+class PastTransition extends AbstractTransition implements TransitionContract
 {
     use HasFactory;
 
@@ -39,8 +39,8 @@ class Transition extends AbstractTransition implements TransitionContract
         return data_get($this->changed_attributes, "$attribute.new", null);
     }
 
-    protected static function newFactory(): TransitionFactory
+    protected static function newFactory(): PastTransitionFactory
     {
-        return new TransitionFactory();
+        return new PastTransitionFactory();
     }
 }

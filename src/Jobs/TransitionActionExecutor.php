@@ -2,156 +2,49 @@
 
 namespace byteit\LaravelEnumStateMachines\Jobs;
 
+use byteit\LaravelEnumStateMachines\Contracts\Transition as TransitionContract;
 use byteit\LaravelEnumStateMachines\Jobs\Concerns\InteractsWithTransition;
-use Closure;
-use Illuminate\Bus\PendingBatch;
+use byteit\LaravelEnumStateMachines\PendingTransition;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Foundation\Bus\PendingChain;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Throwable;
 
-class TransitionActionExecutor
+class TransitionActionExecutor implements ShouldQueue
 {
     use InteractsWithQueue,
         InteractsWithTransition,
         Queueable,
-        Dispatchable,
-        SerializesModels;
+        Dispatchable;
 
     public function __construct(
-        protected mixed $action,
+        PendingTransition $transition,
     ) {
+        $this->transition = $transition;
     }
 
     /**
      * @throws Throwable
      */
-    public function handle(): void
+    public function handle(): TransitionContract
     {
+        $action = $this->transition->definition;
+
         if ($this->job) {
-            $this->setJobInstanceIfNecessary($this->action);
+            $action->setJob($this->job);
         }
 
-        $this->setTransitionInstanceIfNecessary($this->action);
+        $action->setTransition($this->transition);
+        $action->handle($this->transition);
 
-        if ($this->action instanceof Closure) {
-            try {
-                $response = ($this->action)($this->transition->model);
-            } catch (Throwable $e) {
-                $this->failed($e);
-
-                return;
-            }
-        } else {
-
-            $method = method_exists(
-                $this->action,
-                'handle'
-            ) ? 'handle' : '__invoke';
-            try {
-                $response = $this->action->{$method}($this->transition->model);
-            } catch (Throwable $e) {
-                $this->failed($e);
-
-                return;
-            }
-        }
-
-        if ($response instanceof PendingChain) {
-            $transition = $this->transition;
-
-            $response->chain[] = static function () use ($transition) {
-                $transition->finishAction();
-            };
-
-            $response->catch(static function () use ($transition) {
-                $transition->failAction();
-            });
-
-            $response->dispatch();
-
-            return;
-        }
-
-        if ($response instanceof PendingBatch) {
-            $transition = $this->transition;
-            $response
-                ->then(static function () use ($transition) {
-                    $transition->finishAction();
-                })
-                ->catch(static function () use ($transition) {
-                    $transition->failAction();
-                });
-
-            $response->dispatch();
-
-            return;
-        }
-
-        $this->transition->finishAction();
+        return $this->transition->finished();
     }
 
     public function failed(Throwable $throwable): void
     {
-        try {
-            if (method_exists($this->action, 'failed')) {
-                $this->action->failed($throwable);
-            }
-        } finally {
-            $this->transition->failAction();
 
-        }
-    }
+        $this->transition->failed($throwable);
 
-    /**
-     * Set the job instance of the given class if necessary.
-     */
-    protected function setJobInstanceIfNecessary(mixed $instance): mixed
-    {
-        if (in_array(
-            InteractsWithQueue::class,
-            class_uses_recursive($instance::class),
-            true
-        )) {
-            $instance->setJob($this->job);
-        }
-
-        return $instance;
-    }
-
-    /**
-     * Set the job instance of the given class if necessary.
-     */
-    protected function setTransitionInstanceIfNecessary(mixed $instance): mixed
-    {
-        if (in_array(
-            InteractsWithTransition::class,
-            class_uses_recursive($instance::class),
-            true
-        )) {
-            $instance->setTransition($this->transition);
-        }
-
-        return $instance;
-    }
-
-    /**
-     * Extract the queue connection for the action.
-     */
-    public static function connection($action): ?string
-    {
-        return property_exists($action, 'connection') ?
-            $action->connection :
-            null;
-    }
-
-    /**
-     * Extract the queue name for the action.
-     */
-    public static function queue($action): ?string
-    {
-        return property_exists($action, 'queue') ? $action->queue : null;
     }
 }

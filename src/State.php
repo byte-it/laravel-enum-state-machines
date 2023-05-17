@@ -4,11 +4,11 @@ namespace byteit\LaravelEnumStateMachines;
 
 use byteit\LaravelEnumStateMachines\Contracts\States;
 use byteit\LaravelEnumStateMachines\Contracts\Transition as TransitionContract;
-use byteit\LaravelEnumStateMachines\Exceptions\StateLocked;
+use byteit\LaravelEnumStateMachines\Exceptions\StateLockedException;
 use byteit\LaravelEnumStateMachines\Exceptions\TransitionGuardException;
 use byteit\LaravelEnumStateMachines\Exceptions\TransitionNotAllowedException;
+use byteit\LaravelEnumStateMachines\Models\PastTransition;
 use byteit\LaravelEnumStateMachines\Models\PostponedTransition;
-use byteit\LaravelEnumStateMachines\Models\Transition;
 use byteit\LaravelEnumStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -23,7 +23,7 @@ use TypeError;
  *
  * @template TStates of States
  *
- * @property Model&HasStateMachines $model
+ * @property (Model&HasStateMachines) $model
  */
 class State
 {
@@ -32,7 +32,7 @@ class State
     public ?States $state;
 
     /**
-     * @var Model&HasStateMachines
+     * @var (Model&HasStateMachines)
      */
     protected Model $model;
 
@@ -107,7 +107,7 @@ class State
         return $stateHistory->created_at;
     }
 
-    public function snapshotWhen(States $state): ?Transition
+    public function snapshotWhen(States $state): ?PastTransition
     {
         $this->assertStateClass($state);
 
@@ -166,7 +166,7 @@ class State
      * @throws BindingResolutionException
      * @throws TransitionGuardException
      * @throws TransitionNotAllowedException
-     * @throws StateLocked
+     * @throws StateLockedException
      */
     public function transitionTo(
         States $to,
@@ -207,7 +207,7 @@ class State
         );
     }
 
-    public function latest(): ?Transition
+    public function latest(): ?PastTransition
     {
         return $this->snapshotWhen($this->state);
     }
@@ -225,6 +225,11 @@ class State
     public function allCustomProperties(): array
     {
         return optional($this->latest())->allCustomProperties() ?? [];
+    }
+
+    public function isLocked(): bool
+    {
+        return app(TransitionRepository::class)->isLocked($this->model, $this->field);
     }
 
     protected function assertStateClass(mixed $state): void

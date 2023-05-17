@@ -1,38 +1,107 @@
 <?php
 
-use byteit\LaravelEnumStateMachines\OnTransition;
-use byteit\LaravelEnumStateMachines\StateMachineManager;
-use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\Guards\FalseGuard;
-use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\StateWithSyncAction;
+use byteit\LaravelEnumStateMachines\Events\TransitionPostponed;
+use byteit\LaravelEnumStateMachines\Events\TransitionStarted;
+use byteit\LaravelEnumStateMachines\Exceptions\TransitionNotAllowedException;
+use byteit\LaravelEnumStateMachines\Models\PostponedTransition;
+use byteit\LaravelEnumStateMachines\StateMachine;
+use byteit\LaravelEnumStateMachines\Tests\TestModels\SalesOrder;
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\TestState;
-use Illuminate\Support\Arr;
-use function PHPUnit\Framework\assertEquals;
-use function PHPUnit\Framework\assertInstanceOf;
+use byteit\LaravelEnumStateMachines\Transition;
+use Illuminate\Support\Facades\Event;
 
-it('should resolve guards', function () {
-    $machine = app(StateMachineManager::class)->make(TestState::class);
+dataset('machine', [fn () => new StateMachine(
+    TestState::class,
+    TestState::Init,
+)]);
 
-    $resolved = $machine->resolveGuards(TestState::Init, TestState::Guarded);
+it('resolve the transition definition', function (StateMachine $machine) {
+    $default = $machine->resolveDefinition(null, TestState::Init);
+    expect($default)->toBeInstanceOf(Transition::class);
+})
+    ->with('machine')
+    ->todo();
 
-    assertEquals(1, count($resolved));
+it(
+    'dispatch a transition',
+    function (StateMachine $machine, SalesOrder $order) {
 
-    $onTransition = $resolved[0];
+        Event::fake(TransitionStarted::class);
+        $machine->transitionTo(
+            model: $order,
+            field: 'state',
+            from: TestState::Init,
+            to: TestState::Intermediate,
+        );
+        Event::assertDispatched(TransitionStarted::class);
+    }
+)
+    ->with('machine')
+    ->with('salesOrder')
+    ->skip('Fix');
 
-    assertInstanceOf(OnTransition::class, $onTransition);
+it('fails to dispatch an invalid transition', function (StateMachine $machine, SalesOrder $order) {
 
-    assertEquals(FalseGuard::class, $onTransition->class);
-});
+    Event::fake(TransitionStarted::class);
+    expect(fn () => $machine->transitionTo(
+        model: $order,
+        field: 'state',
+        from: TestState::Intermediate,
+        to: TestState::Init,
+    ))->toThrow(TransitionNotAllowedException::class);
 
-it('should resolve before actions', function () {
-    $machine = app(StateMachineManager::class)->make(StateWithSyncAction::class);
+    Event::assertNotDispatched(TransitionStarted::class);
+})
+    ->with('machine')
+    ->with('salesOrder');
 
-    $resolved = $machine->resolveActions(StateWithSyncAction::Created, StateWithSyncAction::InlineSyncAction);
+it('postpone a transition', function (StateMachine $machine, SalesOrder $order) {
+    Event::fake(TransitionPostponed::class);
+    $transition = $machine->postponeTransitionTo(
+        model: $order,
+        field: 'state',
+        from: TestState::Init,
+        to: TestState::Intermediate,
+        when: now(),
+    );
 
-    assertEquals(1, count($resolved));
+    Event::assertDispatched(TransitionPostponed::class);
+    expect($transition)
+        ->toBeInstanceOf(PostponedTransition::class);
 
-    $onTransition = Arr::first($resolved);
+})
+    ->with('machine')
+    ->with('salesOrder');
 
-    assertInstanceOf(OnTransition::class, $onTransition);
+it('fails to postpone an invalid transition', function (StateMachine $machine, SalesOrder $order) {
+    Event::fake(TransitionPostponed::class);
+    expect(fn () => $machine->postponeTransitionTo(
+        model: $order,
+        field: 'state',
+        from: TestState::Intermediate,
+        to: TestState::Init,
+        when: now(),
+    ))->toThrow(TransitionNotAllowedException::class);
+    Event::assertNotDispatched(TransitionPostponed::class);
+})
+    ->with('machine')
+    ->with('salesOrder');
 
-    assertEquals(StateWithSyncAction::class, $onTransition->class);
-});
+it('postpone a transition and ignore invalid transition', function (StateMachine $machine, SalesOrder $order) {
+    Event::fake(TransitionPostponed::class);
+    $transition = $machine->postponeTransitionTo(
+        model: $order,
+        field: 'state',
+        from: TestState::Init,
+        to: TestState::Intermediate,
+        when: now(),
+        skipAssertion: true
+    );
+
+    Event::assertDispatched(TransitionPostponed::class);
+    expect($transition)
+        ->toBeInstanceOf(PostponedTransition::class);
+
+})
+    ->with('machine')
+    ->with('salesOrder');

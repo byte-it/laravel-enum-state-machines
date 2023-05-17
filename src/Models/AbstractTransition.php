@@ -11,8 +11,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
- * @property string $id
- * @property Model&HasStateMachines $model
+ * @property int $id
+ * @property string $uuid
+ * @property (Model&HasStateMachines) $model
  * @property string $field
  * @property class-string<States> $states
  * @property States $from

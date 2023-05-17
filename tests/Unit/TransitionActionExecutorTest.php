@@ -1,10 +1,10 @@
 <?php
 
 use byteit\LaravelEnumStateMachines\Jobs\TransitionActionExecutor;
-use byteit\LaravelEnumStateMachines\Models\PendingTransition;
+use byteit\LaravelEnumStateMachines\PendingTransition;
 use byteit\LaravelEnumStateMachines\Tests\TestModels\SalesOrder;
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\StateWithAsyncAction;
-use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\TransitionActions\QueuedTransitionAction;
+use byteit\LaravelEnumStateMachines\Transition;
 
 it('should call the failed method of the action if it exists',
     function () {
@@ -15,15 +15,15 @@ it('should call the failed method of the action if it exists',
             SalesOrder::factory()->create(),
             'async_action',
             [],
-            null
+            null,
+            Transition::make()
         );
 
-        $action = new QueuedTransitionAction();
-        $job = ( new TransitionActionExecutor($action))->setTransition($transition);
+        $job = new TransitionActionExecutor($transition);
 
         $exception = new Exception();
         $job->failed($exception);
 
-        $this->assertEquals($exception, $action->throwable);
+        expect($transition->throwable())->toEqual($exception);
     }
 );

@@ -2,17 +2,16 @@
 
 namespace byteit\LaravelEnumStateMachines\Events;
 
-use byteit\LaravelEnumStateMachines\Models\PendingTransition;
+use byteit\LaravelEnumStateMachines\Models\FailedTransition;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Queue\SerializesModels;
 
 class TransitionFailed
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable, InteractsWithSockets;
 
     public function __construct(
-        public readonly PendingTransition $transition
+        public readonly FailedTransition $transition
     ) {
     }
 }

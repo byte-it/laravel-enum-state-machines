@@ -2,7 +2,7 @@
 
 namespace byteit\LaravelEnumStateMachines\Jobs\Concerns;
 
-use byteit\LaravelEnumStateMachines\Models\PendingTransition;
+use byteit\LaravelEnumStateMachines\PendingTransition;
 
 trait InteractsWithTransition
 {

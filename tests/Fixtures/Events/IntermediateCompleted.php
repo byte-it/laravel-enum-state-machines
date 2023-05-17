@@ -1,6 +1,6 @@
 <?php
 
-namespace byteit\LaravelEnumStateMachines\Tests\Fixutres\Events;
+namespace byteit\LaravelEnumStateMachines\Tests\Fixtures\Events;
 
 use byteit\LaravelEnumStateMachines\Events\TransitionCompleted;
 

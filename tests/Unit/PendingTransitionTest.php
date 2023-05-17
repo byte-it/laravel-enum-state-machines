@@ -1,16 +1,27 @@
 <?php
 
-use byteit\LaravelEnumStateMachines\Models\PendingTransition;
+use byteit\LaravelEnumStateMachines\Models\FailedTransition;
+use byteit\LaravelEnumStateMachines\Models\PastTransition;
+use byteit\LaravelEnumStateMachines\PendingTransition;
+use byteit\LaravelEnumStateMachines\Tests\Fixtures\AsyncTransition;
 use byteit\LaravelEnumStateMachines\Tests\TestModels\SalesOrder;
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\TestState;
-use byteit\LaravelEnumStateMachines\TransitionRepository;
+use byteit\LaravelEnumStateMachines\Transition;
 use Illuminate\Support\Str;
 
 it('can be serialized', function () {
 
     $order = SalesOrder::factory()->create();
 
-    $transition = new PendingTransition(TestState::Init, TestState::Intermediate, $order, 'state', [], null);
+    $transition = new PendingTransition(
+        TestState::Init,
+        TestState::Intermediate,
+        $order,
+        'state',
+        [],
+        null,
+        new Transition(),
+    );
 
     $serialized = serialize($transition);
 
@@ -26,20 +37,106 @@ it('can be serialized', function () {
         ->toEqual($order->notes);
 });
 
-it('gets a fresh Lock after unserialzing', function () {
+it('can postpone a transition', function () {
+
     $order = SalesOrder::factory()->create();
+    $transition = new PendingTransition(
+        TestState::Init,
+        TestState::Intermediate,
+        $order,
+        'state',
+        [],
+        null,
+        new Transition(),
+    );
 
-    $transition = new PendingTransition(TestState::Init, TestState::Intermediate, $order, 'state', [], null);
-    $serialized = serialize($transition);
-    /** @var PendingTransition $woken */
-    $woken = unserialize($serialized);
+    $transition->postpone(now());
 
-    expect($woken->lock()->get())->toBeTrue();
-    $repo = new TransitionRepository();
-
-    expect($repo->lock($woken, Str::uuid())->get())->toBeFalse();
+    expect($transition->isPostponed())->toBeTrue();
 });
 
-it('can postpone a transition');
-it('can be dispatched');
-it('can finish a transition');
+it('is async', function () {
+    $order = SalesOrder::factory()->create();
+
+    $transition = new PendingTransition(
+        TestState::Init,
+        TestState::Intermediate,
+        $order,
+        'state',
+        [],
+        null,
+        new AsyncTransition(),
+    );
+    expect($transition->isAsync())
+        ->toBeTrue();
+});
+
+it('can fail', function () {
+    $order = SalesOrder::factory()->create();
+
+    $transition = new PendingTransition(
+        TestState::Init,
+        TestState::Intermediate,
+        $order,
+        'state',
+        [],
+        null,
+        new Transition(),
+    );
+
+    $failed = $transition->failed(new Exception());
+
+    expect($transition->isFailed())
+        ->toBeTrue()
+        ->and($transition->throwable())
+        ->toBeInstanceOf(Exception::class)
+        ->and($transition->isPending())
+        ->toBeFalse()
+        ->and($failed)
+        ->toBeInstanceOf(FailedTransition::class);
+});
+
+it('can finish', function () {
+    $order = SalesOrder::factory()->create();
+
+    $transition = new PendingTransition(
+        TestState::Init,
+        TestState::Intermediate,
+        $order,
+        'state',
+        [],
+        null,
+        new Transition(),
+    );
+
+    /** @var PastTransition $finished */
+    $finished = $transition->finished();
+
+    $model = $finished->model;
+    expect($transition->isPending())
+        ->toBeFalse()
+        ->and($finished)
+        ->toBeInstanceOf(PastTransition::class)
+        ->and($finished->uuid)
+        ->toEqual($transition->uuid)
+        ->and($finished->model->state)
+        ->toEqual(TestState::Intermediate)
+        ->and($model->isDirty())
+        ->toBeFalse();
+});
+
+it('has a uuid', function () {
+    $order = SalesOrder::factory()->create();
+
+    $transition = new PendingTransition(
+        TestState::Init,
+        TestState::Intermediate,
+        $order,
+        'state',
+        [],
+        null,
+        new Transition(),
+    );
+
+    expect(Str::isUuid($transition->uuid))->toBeTrue();
+});

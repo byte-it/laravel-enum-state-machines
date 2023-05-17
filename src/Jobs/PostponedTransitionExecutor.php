@@ -3,47 +3,57 @@
 namespace byteit\LaravelEnumStateMachines\Jobs;
 
 use byteit\LaravelEnumStateMachines\Exceptions\InvalidStartingStateException;
+use byteit\LaravelEnumStateMachines\Exceptions\StateLockedException;
+use byteit\LaravelEnumStateMachines\Exceptions\TransitionGuardException;
 use byteit\LaravelEnumStateMachines\Models\PostponedTransition;
+use byteit\LaravelEnumStateMachines\PendingTransition;
+use byteit\LaravelEnumStateMachines\TransitionDispatcher;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 
 class PostponedTransitionExecutor implements ShouldQueue
 {
-    use InteractsWithQueue, Queueable, Dispatchable, SerializesModels;
+    use InteractsWithQueue, Queueable, Dispatchable;
 
-    public PostponedTransition $postponedTransition;
+    public PostponedTransition $transition;
 
-    public function __construct(PostponedTransition $postponedTransition)
+    public function __construct(PostponedTransition $transition)
     {
-        $this->postponedTransition = $postponedTransition;
+        $this->transition = $transition;
     }
 
-    public function handle(): void
+    /**
+     * @throws StateLockedException
+     * @throws TransitionGuardException
+     */
+    public function handle(TransitionDispatcher $dispatcher): void
     {
-        $field = $this->postponedTransition->field;
-        $model = $this->postponedTransition->model;
-        $from = $this->postponedTransition->from;
-        $to = $this->postponedTransition->to;
-        $customProperties = $this->postponedTransition->custom_properties;
-        $responsible = $this->postponedTransition->responsible;
+        $field = $this->transition->field;
+        $model = $this->transition->model;
+        $from = $this->transition->from;
 
-        if ($model->$field()->isNot($from)) {
+        if ($model->$field !== $from) {
             $exception = new InvalidStartingStateException(
                 $from,
                 $model->$field()->state()
             );
+
+            // TODO: Delete postponed and fire event
+            $this->transition->applied_at = now();
+            $this->transition->save();
 
             $this->fail($exception);
 
             return;
         }
 
-        $model->$field()->transitionTo($to, $customProperties, $responsible);
+        $this->transition->applied_at = now();
+        $this->transition->save();
 
-        $this->postponedTransition->applied_at = now();
-        $this->postponedTransition->save();
+        $pending = PendingTransition::fromPostponed($this->transition);
+
+        $dispatcher->dispatch($pending);
     }
 }

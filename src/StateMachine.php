@@ -7,13 +7,9 @@ use byteit\LaravelEnumStateMachines\Contracts\Transition as TransitionContract;
 use byteit\LaravelEnumStateMachines\Events\TransitionCompleted;
 use byteit\LaravelEnumStateMachines\Exceptions\TransitionGuardException;
 use byteit\LaravelEnumStateMachines\Exceptions\TransitionNotAllowedException;
-use byteit\LaravelEnumStateMachines\Models\PendingTransition;
 use byteit\LaravelEnumStateMachines\Models\PostponedTransition;
-use byteit\LaravelEnumStateMachines\Models\Transition;
-use byteit\LaravelEnumStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 
 class StateMachine
@@ -25,11 +21,7 @@ class StateMachine
 
     public States $initialState;
 
-    public bool $recordHistory;
-
-    public array $guards = [];
-
-    public array $actions = [];
+    public bool $recordTransitions;
 
     /**
      * @var array<string, class-string<TransitionCompleted>>
@@ -38,26 +30,17 @@ class StateMachine
 
     /**
      * @param  class-string<States>  $states The States enum class
-     * @param  array<string, class-string<TransitionCompleted>>  $events
      */
     public function __construct(
         string $states,
         States $initialState,
-        array $guards = [],
-        array $actions = [],
-        array $events = [],
-        bool $recordHistory = true,
+        bool $recordTransitions = true,
     ) {
 
         $this->states = $states;
         $this->initialState = $initialState;
 
-        $this->guards = $guards;
-        $this->actions = $actions;
-
-        $this->events = $events;
-
-        $this->recordHistory = $recordHistory;
+        $this->recordTransitions = $recordTransitions;
 
     }
 
@@ -84,8 +67,7 @@ class StateMachine
      * @throws AuthorizationException
      * @throws TransitionGuardException
      * @throws TransitionNotAllowedException
-     * @throws BindingResolutionException
-     * @throws Exceptions\StateLocked
+     * @throws Exceptions\StateLockedException
      */
     public function transitionTo(
         Model $model,
@@ -107,23 +89,10 @@ class StateMachine
             $responsible
         );
 
-        $transition = $transition->dispatch();
-
-        if ($transition instanceof PendingTransition && $transition->pending()) {
-            return $transition;
-        }
-
-        if ($transition instanceof Transition || $transition instanceof PendingTransition) {
-            $transition->save();
-
-            return $transition;
-        }
-
-        return null;
+        return app(TransitionDispatcher::class)->dispatch($transition);
     }
 
     /**
-     * @param (Model&HasStateMachines) $model
      * @param  null  $responsible
      *
      * @throws TransitionNotAllowedException
@@ -162,27 +131,9 @@ class StateMachine
         return $this->initialState;
     }
 
-    public function recordHistory(): bool
+    public function recordTransitions(): bool
     {
-        return $this->recordHistory;
-    }
-
-    /**
-     * @return OnTransition[]
-     */
-    public function resolveGuards(States $from, States $to): array
-    {
-        return collect($this->guards)
-            ->filter(fn (OnTransition $onTransition) => $onTransition->applies($from, $to))->all();
-    }
-
-    /**
-     * @return OnTransition[]
-     */
-    public function resolveActions(States $from, States $to): array
-    {
-        return collect($this->actions)
-            ->filter(fn (OnTransition $onTransition) => $onTransition->applies($from, $to))->all();
+        return $this->recordTransitions;
     }
 
     /**
@@ -198,6 +149,8 @@ class StateMachine
     ): PendingTransition {
         $responsible = $responsible ?? auth()->user();
 
+        $definition = $this->resolveDefinition($from, $to);
+
         return new PendingTransition(
             from: $from,
             to: $to,
@@ -205,9 +158,27 @@ class StateMachine
             field: $field,
             customProperties: $customProperties,
             responsible: $responsible,
-            guards: $this->resolveGuards($from, $to),
-            actions: $this->resolveActions($from, $to),
-            event: $this->events[$to->value] ?? null,
+            definition: $definition,
         );
+    }
+
+    public function makeTransitionFromPostponed(PostponedTransition $transition): PendingTransition
+    {
+
+        $definition = $this->resolveDefinition($transition->from, $transition->to);
+
+    }
+
+    public function resolveDefinition(?States $from, States $to): Transition
+    {
+        if (! method_exists($to, 'definitions')) {
+            return Transition::make();
+        }
+
+        return collect($to->definitions())
+            ->filter(fn (Transition $transition) => $transition->applies($from, $to))
+            // TODO: Add support for weights
+            ->first() ?? Transition::make();
+
     }
 }
