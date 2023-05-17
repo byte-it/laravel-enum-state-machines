@@ -13,12 +13,12 @@ class CreatePastTransitionsTable extends Migration
             $table->uuid();
             $table->morphs('model');
             $table->string('field');
+            $table->string('states');
 
             $table->string('from')->nullable();
             $table->string('to')->nullable();
 
             $table->string('states');
-
 
             $table->json('custom_properties')->nullable();
             $table->nullableMorphs('responsible');
@@ -31,6 +31,6 @@ class CreatePastTransitionsTable extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('transitions');
+        Schema::dropIfExists('past_transitions');
     }
 }

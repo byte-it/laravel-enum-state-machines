@@ -19,7 +19,7 @@ class LaravelEnumStateMachinesServiceProvider extends PackageServiceProvider
             ->name('laravel-enum-state-machines')
             ->hasConfigFile()
             ->hasMigration('create_postponed_transitions_table')
-            ->hasMigration('create_transitions_table')
-            ->hasCommand(MakeStateMachine::class);
+            ->hasMigration('create_past_transitions_table')
+            ->hasMigration('create_failed_transitions_table');
     }
 }

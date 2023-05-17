@@ -30,6 +30,6 @@ class CreateFailedTransitionsTable extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('postponed_transitions');
+        Schema::dropIfExists('failed_transitions');
     }
 }
