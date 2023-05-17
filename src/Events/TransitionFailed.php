@@ -2,7 +2,6 @@
 
 namespace byteit\LaravelEnumStateMachines\Events;
 
-use byteit\LaravelEnumStateMachines\Models\FailedTransition;
 use byteit\LaravelEnumStateMachines\PendingTransition;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;

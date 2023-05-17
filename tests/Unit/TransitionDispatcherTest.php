@@ -1,7 +1,6 @@
 <?php
 
 use byteit\LaravelEnumStateMachines\Exceptions\TransitionGuardException;
-use byteit\LaravelEnumStateMachines\Jobs\TransitionActionExecutor;
 use byteit\LaravelEnumStateMachines\Models\PastTransition;
 use byteit\LaravelEnumStateMachines\PendingTransition;
 use byteit\LaravelEnumStateMachines\Tests\TestModels\SalesOrder;
@@ -9,7 +8,6 @@ use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\TestStat
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\Transitions\WithQueuedAction;
 use byteit\LaravelEnumStateMachines\Transition;
 use byteit\LaravelEnumStateMachines\TransitionDispatcher;
-use Illuminate\Foundation\Bus\PendingDispatch;
 use Illuminate\Support\Facades\Queue;
 
 it('can execute a sync action', function (SalesOrder $order) {

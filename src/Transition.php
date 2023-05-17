@@ -3,14 +3,12 @@
 namespace byteit\LaravelEnumStateMachines;
 
 use byteit\LaravelEnumStateMachines\Contracts\States;
-use byteit\LaravelEnumStateMachines\Jobs\Concerns\InteractsWithTransition;
 use Closure;
 use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Arr;
 use Laravel\SerializableClosure\SerializableClosure;
-use Throwable;
 
 class Transition
 {
@@ -75,7 +73,6 @@ class Transition
             call_user_func($this->actionCallback->getClosure(), $transition);
         }
     }
-
 
     public function applies(?States $from, States $to): bool
     {

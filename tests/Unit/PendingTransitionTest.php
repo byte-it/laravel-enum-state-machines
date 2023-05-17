@@ -1,6 +1,5 @@
 <?php
 
-use byteit\LaravelEnumStateMachines\Models\FailedTransition;
 use byteit\LaravelEnumStateMachines\Models\PastTransition;
 use byteit\LaravelEnumStateMachines\PendingTransition;
 use byteit\LaravelEnumStateMachines\Tests\Fixtures\AsyncTransition;

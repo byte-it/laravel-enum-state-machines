@@ -3,8 +3,6 @@
 namespace byteit\LaravelEnumStateMachines\Jobs;
 
 use byteit\LaravelEnumStateMachines\Exceptions\InvalidStartingStateException;
-use byteit\LaravelEnumStateMachines\Exceptions\StateLockedException;
-use byteit\LaravelEnumStateMachines\Exceptions\TransitionGuardException;
 use byteit\LaravelEnumStateMachines\Models\PostponedTransition;
 use byteit\LaravelEnumStateMachines\PendingTransition;
 use byteit\LaravelEnumStateMachines\TransitionDispatcher;
@@ -26,7 +24,6 @@ class PostponedTransitionExecutor implements ShouldQueue
     }
 
     /**
-     * @param TransitionDispatcher $dispatcher
      * @throws Throwable
      */
     public function handle(TransitionDispatcher $dispatcher): void

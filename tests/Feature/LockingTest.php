@@ -87,7 +87,6 @@ it('should release the lock after the transition has been completed', function (
 it('should release the lock if the transition fails', function (SalesOrder $order, string $type) {
     $repo = app(TransitionRepository::class);
 
-
     $transition = new PendingTransition(
         TestState::Init,
         TestState::Intermediate,
@@ -105,10 +104,10 @@ it('should release the lock if the transition fails', function (SalesOrder $orde
         }
     );
 
-    try{
+    try {
         app(TransitionDispatcher::class)->dispatch($transition);
+    } catch (Throwable) {
     }
-    catch (Throwable){}
 
     $lock = $repo->lock($transition);
     expect($lock->get())->toBeTrue();

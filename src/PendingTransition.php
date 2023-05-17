@@ -47,16 +47,15 @@ class PendingTransition implements TransitionContract
     protected array $changes = [];
 
     public function __construct(
-        public readonly States|null        $from,
-        public readonly States             $to,
-        public readonly Model              $model,
-        public readonly string             $field,
+        public readonly States|null $from,
+        public readonly States $to,
+        public readonly Model $model,
+        public readonly string $field,
         public array|Arrayable|ArrayAccess $customProperties,
-        public readonly mixed              $responsible,
-        public readonly Transition         $definition,
-        ?string                            $uuid = null,
-    )
-    {
+        public readonly mixed $responsible,
+        public readonly Transition $definition,
+        ?string $uuid = null,
+    ) {
         $this->uuid = $uuid ?? Str::uuid();
 
         if ($this->definition instanceof ShouldQueue) {
@@ -75,7 +74,7 @@ class PendingTransition implements TransitionContract
         } catch (Throwable $e) {
             throw new TransitionGuardException(previous: $e);
         }
-        if (!$result) {
+        if (! $result) {
             throw new TransitionGuardException();
         }
 
@@ -292,7 +291,7 @@ class PendingTransition implements TransitionContract
         $lock = app(TransitionRepository::class)
             ->lock($this);
 
-        if (!$lock->get()) {
+        if (! $lock->get()) {
             throw new StateLockedException();
         }
     }
@@ -303,5 +302,4 @@ class PendingTransition implements TransitionContract
             ->lock($this)
             ->release();
     }
-
 }

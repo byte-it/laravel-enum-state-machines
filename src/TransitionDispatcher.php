@@ -35,8 +35,7 @@ class TransitionDispatcher
             if ($dispatch instanceof TransitionContract) {
                 return $dispatch;
             }
-        }
-        catch (StateLockedException|TransitionGuardException $e){
+        } catch (StateLockedException|TransitionGuardException $e) {
             throw $e;
         } catch (Throwable $e) {
             return $transition->failed($e, $transition->shouldQueue());
@@ -52,7 +51,7 @@ class TransitionDispatcher
     {
         $lock = $this->repository->lock($transition);
 
-        if (!$lock->get()) {
+        if (! $lock->get()) {
             throw new StateLockedException();
         }
     }
@@ -68,7 +67,7 @@ class TransitionDispatcher
             throw new TransitionGuardException(previous: $e);
         }
 
-        if (!$result) {
+        if (! $result) {
             throw new TransitionGuardException();
         }
     }
