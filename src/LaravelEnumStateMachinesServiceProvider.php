@@ -2,7 +2,6 @@
 
 namespace byteit\LaravelEnumStateMachines;
 
-use byteit\LaravelEnumStateMachines\Commands\MakeStateMachine;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
