@@ -199,19 +199,17 @@ class State
     }
 
     /**
-     * @param T $target
-     * @param array $customProperties
-     * @param mixed $responsible
+     * @param  T  $target
+     * @param  mixed  $responsible
      *
      * @throws TransitionNotAllowedException
      * @throws Throwable
      */
     public function transitionTo(
         States $target,
-        array  $customProperties = [],
-        mixed  $responsible = null
-    ): ?TransitionContract
-    {
+        array $customProperties = [],
+        mixed $responsible = null
+    ): ?TransitionContract {
         return $this->stateMachine->transitionTo(
             $this->model,
             $this->field,

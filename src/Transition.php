@@ -37,7 +37,7 @@ class Transition
 
     public ?SerializableClosure $actionCallback = null;
 
-    /** @var class-string<TransitionCompleted>  */
+    /** @var class-string<TransitionCompleted> */
     public string $event = TransitionCompleted::class;
 
     public function __construct()
@@ -94,11 +94,13 @@ class Transition
     }
 
     /**
-     * @param class-string<TransitionCompleted> $event
+     * @param  class-string<TransitionCompleted>  $event
      * @return $this
      */
-    public function fire(string $event): static{
+    public function fire(string $event): static
+    {
         $this->event = $event;
+
         return $this;
     }
 

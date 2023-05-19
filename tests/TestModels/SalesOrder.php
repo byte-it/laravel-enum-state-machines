@@ -9,7 +9,6 @@ use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\StateWit
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\StateWithSyncAction;
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\TestState;
 use byteit\LaravelEnumStateMachines\Traits\InteractsWithStateMachines;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 

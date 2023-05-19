@@ -5,7 +5,6 @@ namespace byteit\LaravelEnumStateMachines;
 use ArrayAccess;
 use byteit\LaravelEnumStateMachines\Contracts\States;
 use byteit\LaravelEnumStateMachines\Contracts\Transition as TransitionContract;
-use byteit\LaravelEnumStateMachines\Events\TransitionCompleted;
 use byteit\LaravelEnumStateMachines\Events\TransitionFailed;
 use byteit\LaravelEnumStateMachines\Events\TransitionStarted;
 use byteit\LaravelEnumStateMachines\Exceptions\StateLockedException;
