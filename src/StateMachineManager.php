@@ -17,7 +17,8 @@ class StateMachineManager
 
     /**
      * @template T of States
-     * @param class-string<T> $states
+     *
+     * @param  class-string<T>  $states
      * @return StateMachine<T>|null
      */
     public function make(string $states): ?StateMachine

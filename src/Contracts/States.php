@@ -4,6 +4,7 @@ namespace byteit\LaravelEnumStateMachines\Contracts;
 
 use BackedEnum;
 use byteit\LaravelEnumStateMachines\Transition;
+
 interface States extends BackedEnum
 {
     /**

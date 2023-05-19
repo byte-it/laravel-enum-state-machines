@@ -8,7 +8,6 @@ use byteit\LaravelEnumStateMachines\Models\PostponedTransition;
 use byteit\LaravelEnumStateMachines\State;
 use byteit\LaravelEnumStateMachines\StateMachineManager;
 use Exception;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -18,6 +17,7 @@ use Illuminate\Support\Str;
  * Trait HasStateMachines
  *
  * @property array $stateMachines
+ *
  * @mixin Model
  */
 trait InteractsWithStateMachines
@@ -44,7 +44,7 @@ trait InteractsWithStateMachines
 
                 $state = $this->$camelField();
 
-                if (!($state instanceof State)) {
+                if (! ($state instanceof State)) {
                     throw new Exception('');
                 }
 
@@ -56,15 +56,14 @@ trait InteractsWithStateMachines
 
     /**
      * @template T of States
-     * @param class-string<T> $states
-     * @param string $field
+     *
+     * @param  class-string<T>  $states
      * @return State<T>
      */
     protected function stateMachine(
         string $states,
         string $field,
-    ): State
-    {
+    ): State {
         $manager = app(StateMachineManager::class);
         $stateMachine = $manager->make($states);
 

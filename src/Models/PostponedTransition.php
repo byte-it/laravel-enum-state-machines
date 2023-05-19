@@ -51,7 +51,7 @@ class PostponedTransition extends AbstractTransition implements TransitionContra
 
     protected $dispatchesEvents = [
         'created' => TransitionPostponed::class,
-        'deleted' => PostponedTransitionCanceled::class
+        'deleted' => PostponedTransitionCanceled::class,
     ];
 
     protected static function booted(): void

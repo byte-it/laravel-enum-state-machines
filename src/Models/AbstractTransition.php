@@ -32,16 +32,16 @@ abstract class AbstractTransition extends Model
     public function start(): Attribute
     {
         return new Attribute(
-            get: fn($value) => $this->states::from($value),
-            set: fn(?States $value) => optional($value)->value,
+            get: fn ($value) => $this->states::from($value),
+            set: fn (?States $value) => optional($value)->value,
         );
     }
 
     public function target(): Attribute
     {
         return new Attribute(
-            get: fn($value) => $this->states::from($value),
-            set: fn(?States $value) => optional($value)->value,
+            get: fn ($value) => $this->states::from($value),
+            set: fn (?States $value) => optional($value)->value,
         );
     }
 
@@ -88,20 +88,16 @@ abstract class AbstractTransition extends Model
     }
 
     /**
-     * @param Builder $query
-     * @param string $key
-     * @param mixed $operator
-     * @param mixed $value
+     * @param  mixed  $value
      *
      * @todo Proper Parameter types
      */
     public function scopeWithCustomProperty(
         Builder $query,
-        string  $key,
-        mixed   $operator,
-        mixed   $value = null
-    ): void
-    {
+        string $key,
+        mixed $operator,
+        mixed $value = null
+    ): void {
         $query->where("custom_properties->{$key}", $operator, $value);
     }
 

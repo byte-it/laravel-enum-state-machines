@@ -36,6 +36,7 @@ class PendingTransition implements TransitionContract
     use SerializesModels;
 
     public string $uuid;
+
     protected bool $pending = true;
 
     protected bool $async = false;
@@ -49,26 +50,19 @@ class PendingTransition implements TransitionContract
     protected array $changes = [];
 
     /**
-     * @param T $start
-     * @param T $target
-     * @param Model $model
-     * @param string $field
-     * @param array|Arrayable|ArrayAccess $customProperties
-     * @param mixed $responsible
-     * @param Transition $definition
-     * @param string|null $uuid
+     * @param  T  $start
+     * @param  T  $target
      */
     public function __construct(
-        public readonly States             $start,
-        public readonly States             $target,
-        public readonly Model              $model,
-        public readonly string             $field,
+        public readonly States $start,
+        public readonly States $target,
+        public readonly Model $model,
+        public readonly string $field,
         public array|Arrayable|ArrayAccess $customProperties,
-        public readonly mixed              $responsible,
-        public readonly Transition         $definition,
-        ?string                            $uuid = null,
-    )
-    {
+        public readonly mixed $responsible,
+        public readonly Transition $definition,
+        ?string $uuid = null,
+    ) {
         $this->uuid = $uuid ?? Str::uuid();
 
         if ($this->definition instanceof ShouldQueue) {
@@ -77,7 +71,6 @@ class PendingTransition implements TransitionContract
     }
 
     /**
-     * @return TransitionContract
      * @throws StateLockedException
      * @throws TransitionGuardException
      */
@@ -88,7 +81,7 @@ class PendingTransition implements TransitionContract
         } catch (Throwable $e) {
             throw new TransitionGuardException(previous: $e);
         }
-        if (!$result) {
+        if (! $result) {
             throw new TransitionGuardException();
         }
 
@@ -305,7 +298,7 @@ class PendingTransition implements TransitionContract
         $lock = app(TransitionRepository::class)
             ->lock($this);
 
-        if (!$lock->get()) {
+        if (! $lock->get()) {
             throw new StateLockedException();
         }
     }

@@ -34,23 +34,22 @@ class StateMachine
     public array $events = [];
 
     /**
-     * @param class-string<T> $states The States enum class
-     * @param T $initialState
+     * @param  class-string<T>  $states The States enum class
+     * @param  T  $initialState
      */
     public function __construct(
         string $states,
         States $initialState,
-        bool   $recordTransitions = true,
-    )
-    {
+        bool $recordTransitions = true,
+    ) {
         $this->states = $states;
         $this->initialState = $initialState;
         $this->recordTransitions = $recordTransitions;
     }
 
     /**
-     * @param T $from
-     * @param T $to
+     * @param  T  $from
+     * @param  T  $to
      */
     public function canBe(
         States $from,
@@ -60,8 +59,8 @@ class StateMachine
     }
 
     /**
-     * @param T $from
-     * @param T $to
+     * @param  T  $from
+     * @param  T  $to
      *
      * @throws TransitionNotAllowedException
      */
@@ -75,19 +74,19 @@ class StateMachine
     }
 
     /**
-     * @param T $start
-     * @param T $target
+     * @param  T  $start
+     * @param  T  $target
      *
      * @throws TransitionNotAllowedException
      * @throws Throwable
      */
     public function transitionTo(
-        Model  $model,
+        Model $model,
         string $field,
         States $start,
         States $target,
-        array  $customProperties = [],
-        mixed  $responsible = null
+        array $customProperties = [],
+        mixed $responsible = null
     ): ?TransitionContract {
 
         $this->assertCanBe($start, $target);
@@ -105,25 +104,24 @@ class StateMachine
     }
 
     /**
-     * @param T $start
-     * @param T $target
-     * @param null $responsible
+     * @param  T  $start
+     * @param  T  $target
+     * @param  null  $responsible
      *
      * @throws TransitionNotAllowedException
      */
     public function postponeTransitionTo(
-        Model  $model,
+        Model $model,
         string $field,
         States $start,
         States $target,
         Carbon $when,
-        array  $customProperties = [],
-        mixed  $responsible = null,
-        bool   $skipAssertion = false,
-    ): ?PostponedTransition
-    {
+        array $customProperties = [],
+        mixed $responsible = null,
+        bool $skipAssertion = false,
+    ): ?PostponedTransition {
 
-        if (!$skipAssertion) {
+        if (! $skipAssertion) {
             $this->assertCanBe($start, $target);
         }
 
@@ -164,7 +162,7 @@ class StateMachine
      * @return PendingTransition
      */
     protected function makeTransition(
-        Model  $model,
+        Model $model,
         string $field,
         States $from,
         States $to,
@@ -187,15 +185,14 @@ class StateMachine
     }
 
     /**
-     * @param T|null $from
-     * @param T $to
-     * @return Transition
+     * @param  T|null  $from
+     * @param  T  $to
      */
     public function resolveDefinition(?States $from, States $to): Transition
     {
 
         return collect($to->definitions())
-            ->filter(fn(Transition $transition) => $transition->applies($from, $to))
+            ->filter(fn (Transition $transition) => $transition->applies($from, $to))
             // TODO: Add support for weights
             ->first() ?? Transition::make();
 

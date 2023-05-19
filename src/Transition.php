@@ -40,9 +40,8 @@ class Transition
     {
     }
 
-
     /**
-     * @param T|null ...$start
+     * @param  T|null  ...$start
      * @return $this
      */
     public function start(?States ...$start): self
@@ -73,6 +72,7 @@ class Transition
 
     /**
      * @return $this
+     *
      * @throws PhpVersionNotSupportedException
      */
     public function action(Closure $action): static
@@ -90,13 +90,12 @@ class Transition
     }
 
     /**
-     * @param T|null $start
-     * @param T $target
-     * @return bool
+     * @param  T|null  $start
+     * @param  T  $target
      */
     public function applies(?States $start, States $target): bool
     {
-        $startMatch = Arr::first($this->target, fn(States $allowed) => $allowed === $target);
+        $startMatch = Arr::first($this->target, fn (States $allowed) => $allowed === $target);
 
         if ($startMatch === null) {
             return false;
@@ -106,9 +105,9 @@ class Transition
             return true;
         }
 
-        $targetMatch = Arr::first($this->start, fn(States $allowed) => $allowed === $start);
+        $targetMatch = Arr::first($this->start, fn (States $allowed) => $allowed === $start);
 
-        return !($targetMatch === null);
+        return ! ($targetMatch === null);
     }
 
     public static function make(): static

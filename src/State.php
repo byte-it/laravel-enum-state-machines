@@ -20,7 +20,6 @@ use TypeError;
  * Represents the current state for the field and state machine
  *
  * @template T of States
- *
  */
 class State
 {
@@ -42,18 +41,15 @@ class State
     protected string $field;
 
     /**
-     * @param T $state
-     * @param Model&HasStateMachines $model
-     * @param string $field
-     * @param StateMachine<T> $stateMachine
+     * @param  T  $state
+     * @param  StateMachine<T>  $stateMachine
      */
     public function __construct(
-        ?States                 $state,
+        ?States $state,
         Model&HasStateMachines $model,
-        string                 $field,
-        StateMachine           $stateMachine
-    )
-    {
+        string $field,
+        StateMachine $stateMachine
+    ) {
         $this->state = $state ?? $stateMachine->defaultState();
         $this->model = $model;
         $this->field = $field;
@@ -77,8 +73,7 @@ class State
     }
 
     /**
-     * @param T $state
-     * @return bool
+     * @param  T  $state
      */
     public function is(States $state): bool
     {
@@ -88,19 +83,17 @@ class State
     }
 
     /**
-     * @param T $state
-     * @return bool
+     * @param  T  $state
      */
     public function isNot(States $state): bool
     {
         $this->assertStateClass($state);
 
-        return !$this->is($state);
+        return ! $this->is($state);
     }
 
     /**
-     * @param T $state
-     * @return bool
+     * @param  T  $state
      */
     public function was(States $state): bool
     {
@@ -110,8 +103,7 @@ class State
     }
 
     /**
-     * @param T $state
-     * @return int
+     * @param  T  $state
      */
     public function timesWas(States $state): int
     {
@@ -121,8 +113,7 @@ class State
     }
 
     /**
-     * @param T $state
-     * @return Carbon|null
+     * @param  T  $state
      */
     public function whenWas(States $state): ?Carbon
     {
@@ -137,8 +128,7 @@ class State
     }
 
     /**
-     * @param T $state
-     * @return PastTransition|null
+     * @param  T  $state
      */
     public function snapshotWhen(STates $state): ?PastTransition
     {
@@ -148,8 +138,7 @@ class State
     }
 
     /**
-     * @param T $state
-     * @return Collection
+     * @param  T  $state
      */
     public function snapshotsWhen(States $state): Collection
     {
@@ -167,8 +156,7 @@ class State
     }
 
     /**
-     * @param T $state
-     * @return bool
+     * @param  T  $state
      */
     public function canBe(States $state): bool
     {
@@ -193,47 +181,35 @@ class State
         return $this->model->nextPostponedTransition()->forField($this->field);
     }
 
-    /**
-     * @return bool
-     */
     public function hasPostponedTransitions(): bool
     {
         return $this->postponedTransitions()->exists();
     }
 
-    /**
-     * @return void
-     */
     public function cancelAllPostponedTransitions(): void
     {
         $this->postponedTransitions()->delete();
     }
 
-    /**
-     * @return array
-     */
     public function transitions(): array
     {
         return collect($this->state::cases())
-            ->map(fn(States $states) => $states->transitions())
+            ->map(fn (States $states) => $states->transitions())
             ->all();
     }
 
     /**
-     * @param T $to
-     * @param array $customProperties
-     * @param mixed $responsible
+     * @param  T  $to
+     * @param  mixed  $responsible
      *
-     * @return TransitionContract|null
      * @throws TransitionNotAllowedException
      * @throws Throwable
      */
     public function transitionTo(
         States $to,
-        array  $customProperties = [],
-        mixed  $responsible = null
-    ): ?TransitionContract
-    {
+        array $customProperties = [],
+        mixed $responsible = null
+    ): ?TransitionContract {
         return $this->stateMachine->transitionTo(
             $this->model,
             $this->field,
@@ -245,22 +221,18 @@ class State
     }
 
     /**
-     * @param T $state
-     * @param Carbon $when
-     * @param array $customProperties
-     * @param null $responsible
-     * @param bool $skipAssertion
-     * @return PostponedTransition|null
+     * @param  T  $state
+     * @param  null  $responsible
+     *
      * @throws TransitionNotAllowedException
      */
     public function postponeTransitionTo(
         States $state,
         Carbon $when,
-        array  $customProperties = [],
-        mixed  $responsible = null,
-        bool   $skipAssertion = false,
-    ): ?PostponedTransition
-    {
+        array $customProperties = [],
+        mixed $responsible = null,
+        bool $skipAssertion = false,
+    ): ?PostponedTransition {
         return $this->stateMachine->postponeTransitionTo(
             $this->model,
             $this->field,
@@ -300,12 +272,12 @@ class State
 
     protected function assertStateClass(mixed $state): void
     {
-        if (!($state instanceof $this->state)) {
+        if (! ($state instanceof $this->state)) {
             throw new TypeError(sprintf(
-                    '$state must be of type %s, instead %s  was given.',
-                    $this->state::class,
-                    $state::class
-                )
+                '$state must be of type %s, instead %s  was given.',
+                $this->state::class,
+                $state::class
+            )
             );
         }
     }
