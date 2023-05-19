@@ -60,14 +60,13 @@ class PostponedTransition extends AbstractTransition implements TransitionContra
         static::addGlobalScope(new AppliedScope);
     }
 
-
-    public function transition(): Attribute{
+    public function transition(): Attribute
+    {
         return Attribute::make(
-            get: fn(mixed $value) => unserialize($value),
-            set: fn(Transition $value) => serialize($value)
+            get: fn (mixed $value) => unserialize($value),
+            set: fn (Transition $value) => serialize($value)
         );
     }
-
 
     protected static function newFactory(): PostponedTransitionFactory
     {

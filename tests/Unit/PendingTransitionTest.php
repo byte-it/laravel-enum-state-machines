@@ -1,7 +1,6 @@
 <?php
 
 use byteit\LaravelEnumStateMachines\Models\PastTransition;
-use byteit\LaravelEnumStateMachines\Models\PostponedTransition;
 use byteit\LaravelEnumStateMachines\PendingTransition;
 use byteit\LaravelEnumStateMachines\Tests\Fixtures\AsyncTransition;
 use byteit\LaravelEnumStateMachines\Tests\TestModels\SalesOrder;
