@@ -272,8 +272,6 @@ class PendingTransition implements TransitionContract
     public static function fromPostponed(PostponedTransition $transition): PendingTransition
     {
 
-        $definition = app($transition->transition);
-
         return new PendingTransition(
             start: $transition->start,
             target: $transition->target,
@@ -281,7 +279,7 @@ class PendingTransition implements TransitionContract
             field: $transition->field,
             customProperties: $transition->custom_properties,
             responsible: $transition->responsible,
-            definition: $definition,
+            definition: $transition->transition,
             uuid: $transition->uuid,
         );
     }
