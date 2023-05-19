@@ -15,8 +15,8 @@ class CreatePostponedTransitionsTable extends Migration
             $table->string('field');
             $table->string('states');
 
-            $table->string('from')->nullable();
-            $table->string('to')->nullable();
+            $table->string('start');
+            $table->string('target');
 
             $table->string('transition');
             $table->json('custom_properties')->nullable();

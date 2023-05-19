@@ -28,33 +28,33 @@ it('should apply', function (Transition $transition, ?States $from, States $to) 
     ->with([
         'with target' => [
             Transition::make()
-                ->to(TestState::Init),
+                ->target(TestState::Init),
             null,
             TestState::Init,
         ],
         'with multiple targets' => [
             Transition::make()
-                ->to(TestState::Init, TestState::Intermediate),
+                ->target(TestState::Init, TestState::Intermediate),
             null,
             TestState::Init,
         ],
         'with wildcard origin' => [
             Transition::make()
-                ->to(TestState::Intermediate),
+                ->target(TestState::Intermediate),
             TestState::Init,
             TestState::Intermediate,
         ],
         'with exact match' => [
             Transition::make()
-                ->from(TestState::Init)
-                ->to(TestState::Intermediate),
+                ->start(TestState::Init)
+                ->target(TestState::Intermediate),
             TestState::Init,
             TestState::Intermediate,
         ],
         'with exact match, multiple targets' => [
             Transition::make()
-                ->from(TestState::Init)
-                ->to(TestState::Intermediate, TestState::Finished),
+                ->start(TestState::Init)
+                ->target(TestState::Intermediate, TestState::Finished),
             TestState::Init,
             TestState::Intermediate,
         ],
@@ -66,14 +66,14 @@ it('should not apply', function (Transition $transition, ?States $from, States $
     ->with([
         'invalid to' => [
             Transition::make()
-                ->to(TestState::Init),
+                ->target(TestState::Init),
             null,
             TestState::Intermediate,
         ],
         'missing from' => [
             Transition::make()
-                ->from(TestState::Init)
-                ->to(TestState::Intermediate),
+                ->start(TestState::Init)
+                ->target(TestState::Intermediate),
             null,
             TestState::Intermediate,
         ],

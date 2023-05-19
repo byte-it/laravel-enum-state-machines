@@ -6,12 +6,9 @@ use byteit\LaravelEnumStateMachines\Jobs\PostponedTransitionExecutor;
 use byteit\LaravelEnumStateMachines\Models\PostponedTransition;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Carbon;
+use function sprintf;
 
-/**
- * TODO: Finish command
- * TODO: Add progress
- * TODO: Add better logging
- */
 class DispatchPostponedTransitionsCommand extends Command
 {
     protected $signature = 'state-machine:dispatch-postponed';
@@ -22,17 +19,25 @@ class DispatchPostponedTransitionsCommand extends Command
     {
         /** @var Collection<PostponedTransition> $transitions */
         $transitions = PostponedTransition::query()
+            ->onlyDue()
             ->with(['model'])
-            ->onScheduleOrOverdue()
             ->get();
 
-        $count = count($transitions);
-        $this->line("Found ${count} transitions");
-
         $transitions
-            ->each(function (PostponedTransition $pendingTransition) {
-                PostponedTransitionExecutor::dispatch($pendingTransition);
-                $this->line('Dispatched');
+            ->each(function (PostponedTransition $transition) {
+
+                $description = sprintf(
+                    '<fg=gray>%s</> Dispatching [%s:%s] %s: %s -> %s',
+                    Carbon::now()->format('Y-m-d H:i:s'),
+                    $transition->model::class,
+                    $transition->model->getKey(),
+                    $transition->field,
+                    $transition->start->value,
+                    $transition->target->value
+                );
+
+                $this->line($description);
+                PostponedTransitionExecutor::dispatch($transition);
             });
     }
 }

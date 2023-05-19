@@ -23,4 +23,9 @@ enum StateWithSyncAction: string implements States
             default => [],
         };
     }
+
+    public function definitions(): array
+    {
+        return [];
+    }
 }

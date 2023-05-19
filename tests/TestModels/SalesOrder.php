@@ -2,12 +2,14 @@
 
 namespace byteit\LaravelEnumStateMachines\Tests\TestModels;
 
+use byteit\LaravelEnumStateMachines\Contracts\HasStateMachines;
 use byteit\LaravelEnumStateMachines\State;
 use byteit\LaravelEnumStateMachines\Tests\database\factories\SalesOrderFactory;
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\StateWithAsyncAction;
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\StateWithSyncAction;
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\TestState;
-use byteit\LaravelEnumStateMachines\Traits\HasStateMachines;
+use byteit\LaravelEnumStateMachines\Traits\InteractsWithStateMachines;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -21,9 +23,9 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @method static SalesOrderFactory factory($count = null, $state = [])
  */
-class SalesOrder extends Model
+class SalesOrder extends Model implements HasStateMachines
 {
-    use HasStateMachines;
+    use InteractsWithStateMachines;
     use HasFactory;
 
     protected $guarded = [];
@@ -34,11 +36,19 @@ class SalesOrder extends Model
         'async_state' => StateWithAsyncAction::class,
     ];
 
+    /**
+     * @return State<TestState>
+     * @throws BindingResolutionException
+     */
     public function state(): State
     {
         return $this->stateMachine(TestState::class, 'state');
     }
 
+    /**
+     * @return State<StateWithAsyncAction>
+     * @throws BindingResolutionException
+     */
     public function syncState(): State
     {
         return $this->stateMachine(StateWithSyncAction::class, 'sync_state');

@@ -19,6 +19,16 @@ class PastTransition extends AbstractTransition implements TransitionContract
 
     protected $guarded = [];
 
+    protected $fillable = [
+        'uuid',
+        'field',
+        'states',
+        'start',
+        'target',
+        'custom_properties',
+        'changed_attributes',
+    ];
+
     protected $casts = [
         'custom_properties' => 'array',
         'changed_attributes' => 'array',

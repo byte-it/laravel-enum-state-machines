@@ -3,8 +3,8 @@
 namespace byteit\LaravelEnumStateMachines\Contracts;
 
 /**
- * @property States $from
- * @property States $to
+ * @property States $start
+ * @property States $target
  */
 interface Transition
 {

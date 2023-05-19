@@ -25,6 +25,9 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Str;
 use Throwable;
 
+/**
+ * @template T of States
+ */
 class PendingTransition implements TransitionContract
 {
     use Dispatchable;
@@ -33,7 +36,6 @@ class PendingTransition implements TransitionContract
     use SerializesModels;
 
     public string $uuid;
-
     protected bool $pending = true;
 
     protected bool $async = false;
@@ -46,16 +48,27 @@ class PendingTransition implements TransitionContract
 
     protected array $changes = [];
 
+    /**
+     * @param T $start
+     * @param T $target
+     * @param Model $model
+     * @param string $field
+     * @param array|Arrayable|ArrayAccess $customProperties
+     * @param mixed $responsible
+     * @param Transition $definition
+     * @param string|null $uuid
+     */
     public function __construct(
-        public readonly States|null $from,
-        public readonly States $to,
-        public readonly Model $model,
-        public readonly string $field,
+        public readonly States             $start,
+        public readonly States             $target,
+        public readonly Model              $model,
+        public readonly string             $field,
         public array|Arrayable|ArrayAccess $customProperties,
-        public readonly mixed $responsible,
-        public readonly Transition $definition,
-        ?string $uuid = null,
-    ) {
+        public readonly mixed              $responsible,
+        public readonly Transition         $definition,
+        ?string                            $uuid = null,
+    )
+    {
         $this->uuid = $uuid ?? Str::uuid();
 
         if ($this->definition instanceof ShouldQueue) {
@@ -64,8 +77,9 @@ class PendingTransition implements TransitionContract
     }
 
     /**
-     * @throws TransitionGuardException
+     * @return TransitionContract
      * @throws StateLockedException
+     * @throws TransitionGuardException
      */
     public function handle(): TransitionContract
     {
@@ -74,7 +88,7 @@ class PendingTransition implements TransitionContract
         } catch (Throwable $e) {
             throw new TransitionGuardException(previous: $e);
         }
-        if (! $result) {
+        if (!$result) {
             throw new TransitionGuardException();
         }
 
@@ -112,7 +126,7 @@ class PendingTransition implements TransitionContract
 
     public function finished(): TransitionContract
     {
-        $this->model->{$this->field} = $this->to;
+        $this->model->{$this->field} = $this->target;
 
         $this->changes = array_merge(
             $this->changes,
@@ -165,9 +179,9 @@ class PendingTransition implements TransitionContract
         $properties = [
             'uuid' => $this->uuid,
             'field' => $this->field,
-            'from' => $this->from,
-            'to' => $this->to,
-            'states' => $this->to::class,
+            'start' => $this->start,
+            'target' => $this->target,
+            'states' => $this->target::class,
             'custom_properties' => $this->customProperties,
         ];
 
@@ -272,8 +286,8 @@ class PendingTransition implements TransitionContract
         $definition = app($transition->transition);
 
         return new PendingTransition(
-            from: $transition->from,
-            to: $transition->to,
+            start: $transition->start,
+            target: $transition->target,
             model: $transition->model,
             field: $transition->field,
             customProperties: $transition->custom_properties,
@@ -291,7 +305,7 @@ class PendingTransition implements TransitionContract
         $lock = app(TransitionRepository::class)
             ->lock($this);
 
-        if (! $lock->get()) {
+        if (!$lock->get()) {
             throw new StateLockedException();
         }
     }

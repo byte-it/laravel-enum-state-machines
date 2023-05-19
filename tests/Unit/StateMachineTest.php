@@ -30,8 +30,8 @@ it(
         $machine->transitionTo(
             model: $order,
             field: 'state',
-            from: TestState::Init,
-            to: TestState::Intermediate,
+            start: TestState::Init,
+            target: TestState::Intermediate,
         );
         Event::assertDispatched(TransitionStarted::class);
     }
@@ -46,8 +46,8 @@ it('fails to dispatch an invalid transition', function (StateMachine $machine, S
     expect(fn () => $machine->transitionTo(
         model: $order,
         field: 'state',
-        from: TestState::Intermediate,
-        to: TestState::Init,
+        start: TestState::Intermediate,
+        target: TestState::Init,
     ))->toThrow(TransitionNotAllowedException::class);
 
     Event::assertNotDispatched(TransitionStarted::class);
@@ -60,8 +60,8 @@ it('postpone a transition', function (StateMachine $machine, SalesOrder $order) 
     $transition = $machine->postponeTransitionTo(
         model: $order,
         field: 'state',
-        from: TestState::Init,
-        to: TestState::Intermediate,
+        start: TestState::Init,
+        target: TestState::Intermediate,
         when: now(),
     );
 
@@ -78,8 +78,8 @@ it('fails to postpone an invalid transition', function (StateMachine $machine, S
     expect(fn () => $machine->postponeTransitionTo(
         model: $order,
         field: 'state',
-        from: TestState::Intermediate,
-        to: TestState::Init,
+        start: TestState::Intermediate,
+        target: TestState::Init,
         when: now(),
     ))->toThrow(TransitionNotAllowedException::class);
     Event::assertNotDispatched(TransitionPostponed::class);
@@ -92,8 +92,8 @@ it('postpone a transition and ignore invalid transition', function (StateMachine
     $transition = $machine->postponeTransitionTo(
         model: $order,
         field: 'state',
-        from: TestState::Init,
-        to: TestState::Intermediate,
+        start: TestState::Init,
+        target: TestState::Intermediate,
         when: now(),
         skipAssertion: true
     );

@@ -5,9 +5,7 @@ namespace byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders;
 use byteit\LaravelEnumStateMachines\Attributes\RecordHistory;
 use byteit\LaravelEnumStateMachines\Contracts\States;
 
-#[
-    RecordHistory,
-]
+#[RecordHistory]
 enum StateWithAsyncAction: string implements States
 {
     case Created = 'created';
@@ -22,5 +20,10 @@ enum StateWithAsyncAction: string implements States
             ],
             default => [],
         };
+    }
+
+    public function definitions(): array
+    {
+        return [];
     }
 }

@@ -5,20 +5,25 @@ namespace byteit\LaravelEnumStateMachines;
 use byteit\LaravelEnumStateMachines\Contracts\States;
 use byteit\LaravelEnumStateMachines\Contracts\Transition as TransitionContract;
 use byteit\LaravelEnumStateMachines\Events\TransitionCompleted;
-use byteit\LaravelEnumStateMachines\Exceptions\TransitionGuardException;
 use byteit\LaravelEnumStateMachines\Exceptions\TransitionNotAllowedException;
 use byteit\LaravelEnumStateMachines\Models\PostponedTransition;
 use Carbon\Carbon;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
+use Throwable;
 
+/**
+ * @template T of States
+ */
 class StateMachine
 {
     /**
-     * @var class-string<States> The States implementation
+     * @var class-string<T> The States implementation
      */
     public string $states;
 
+    /**
+     * @var T
+     */
     public States $initialState;
 
     public bool $recordTransitions;
@@ -29,21 +34,24 @@ class StateMachine
     public array $events = [];
 
     /**
-     * @param  class-string<States>  $states The States enum class
+     * @param class-string<T> $states The States enum class
+     * @param T $initialState
      */
     public function __construct(
         string $states,
         States $initialState,
-        bool $recordTransitions = true,
-    ) {
-
+        bool   $recordTransitions = true,
+    )
+    {
         $this->states = $states;
         $this->initialState = $initialState;
-
         $this->recordTransitions = $recordTransitions;
-
     }
 
+    /**
+     * @param T $from
+     * @param T $to
+     */
     public function canBe(
         States $from,
         States $to
@@ -52,6 +60,9 @@ class StateMachine
     }
 
     /**
+     * @param T $from
+     * @param T $to
+     *
      * @throws TransitionNotAllowedException
      */
     public function assertCanBe(
@@ -64,27 +75,28 @@ class StateMachine
     }
 
     /**
-     * @throws AuthorizationException
-     * @throws TransitionGuardException
+     * @param T $start
+     * @param T $target
+     *
      * @throws TransitionNotAllowedException
-     * @throws Exceptions\StateLockedException
+     * @throws Throwable
      */
     public function transitionTo(
-        Model $model,
+        Model  $model,
         string $field,
-        States $from,
-        States $to,
-        array $customProperties = [],
-        mixed $responsible = null
+        States $start,
+        States $target,
+        array  $customProperties = [],
+        mixed  $responsible = null
     ): ?TransitionContract {
 
-        $this->assertCanBe($from, $to);
+        $this->assertCanBe($start, $target);
 
         $transition = $this->makeTransition(
             $model,
             $field,
-            $from,
-            $to,
+            $start,
+            $target,
             $customProperties,
             $responsible
         );
@@ -93,27 +105,30 @@ class StateMachine
     }
 
     /**
-     * @param  null  $responsible
+     * @param T $start
+     * @param T $target
+     * @param null $responsible
      *
      * @throws TransitionNotAllowedException
      */
     public function postponeTransitionTo(
-        Model $model,
+        Model  $model,
         string $field,
-        States $from,
-        States $to,
+        States $start,
+        States $target,
         Carbon $when,
-        array $customProperties = [],
-        mixed $responsible = null,
-        bool $skipAssertion = false,
-    ): ?PostponedTransition {
+        array  $customProperties = [],
+        mixed  $responsible = null,
+        bool   $skipAssertion = false,
+    ): ?PostponedTransition
+    {
 
-        if (! $skipAssertion) {
-            $this->assertCanBe($from, $to);
+        if (!$skipAssertion) {
+            $this->assertCanBe($start, $target);
         }
 
         $transition = $this
-            ->makeTransition($model, $field, $from, $to, $customProperties, $responsible)
+            ->makeTransition($model, $field, $start, $target, $customProperties, $responsible)
             ->postpone($when)
             ->toTransition();
 
@@ -126,6 +141,9 @@ class StateMachine
         return null;
     }
 
+    /**
+     * @return T
+     */
     public function defaultState(): States
     {
         return $this->initialState;
@@ -136,11 +154,17 @@ class StateMachine
         return $this->recordTransitions;
     }
 
-    /**
-     * @param  mixed  $responsible
+    /*
+     * @param Model $model
+     * @param string $field
+     * @param T $from
+     * @param T $to
+     * @param mixed $customProperties
+     * @param mixed $responsible
+     * @return PendingTransition
      */
     protected function makeTransition(
-        Model $model,
+        Model  $model,
         string $field,
         States $from,
         States $to,
@@ -152,8 +176,8 @@ class StateMachine
         $definition = $this->resolveDefinition($from, $to);
 
         return new PendingTransition(
-            from: $from,
-            to: $to,
+            start: $from,
+            target: $to,
             model: $model,
             field: $field,
             customProperties: $customProperties,
@@ -162,21 +186,16 @@ class StateMachine
         );
     }
 
-    public function makeTransitionFromPostponed(PostponedTransition $transition): PendingTransition
-    {
-
-        $definition = $this->resolveDefinition($transition->from, $transition->to);
-
-    }
-
+    /**
+     * @param T|null $from
+     * @param T $to
+     * @return Transition
+     */
     public function resolveDefinition(?States $from, States $to): Transition
     {
-        if (! method_exists($to, 'definitions')) {
-            return Transition::make();
-        }
 
         return collect($to->definitions())
-            ->filter(fn (Transition $transition) => $transition->applies($from, $to))
+            ->filter(fn(Transition $transition) => $transition->applies($from, $to))
             // TODO: Add support for weights
             ->first() ?? Transition::make();
 

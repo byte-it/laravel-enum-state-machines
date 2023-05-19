@@ -20,6 +20,17 @@ class FailedTransition extends AbstractTransition implements TransitionContract
 
     protected $guarded = [];
 
+    protected $fillable = [
+        'uuid',
+        'field',
+        'states',
+        'start',
+        'target',
+        'custom_properties',
+        'exception',
+        'failed_at',
+    ];
+
     protected $table = 'failed_transitions';
 
     protected $casts = [

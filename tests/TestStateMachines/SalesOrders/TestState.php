@@ -42,21 +42,21 @@ enum TestState: string implements States
     {
         return [
             Transition::make()
-                ->from(TestState::Init)
-                ->to(TestState::Intermediate, TestState::Guarded)
+                ->start(TestState::Init)
+                ->target(TestState::Intermediate, TestState::Guarded)
                 ->guard(function (PendingTransition $transition) {
                     return false;
                 }),
             Transition::make()
-                ->to(TestState::WithAction)
+                ->target(TestState::WithAction)
                 ->action(static function (PendingTransition $transition) {
                     $model = $transition->model;
                     $model->notes = 'with_action';
                 }),
             WithCustomAction::make()
-                ->to(TestState::WithCustomAction),
+                ->target(TestState::WithCustomAction),
             WithQueuedAction::make()
-                ->to(TestState::WithQueuedAction),
+                ->target(TestState::WithQueuedAction),
         ];
     }
 }

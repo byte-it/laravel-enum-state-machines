@@ -2,8 +2,8 @@
 
 namespace byteit\LaravelEnumStateMachines\Models;
 
+use byteit\LaravelEnumStateMachines\Contracts\HasStateMachines;
 use byteit\LaravelEnumStateMachines\Contracts\States;
-use byteit\LaravelEnumStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -16,30 +16,32 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property (Model&HasStateMachines) $model
  * @property string $field
  * @property class-string<States> $states
- * @property States $from
- * @property States $to
+ * @property States $start
+ * @property States $target
  * @property array $custom_properties
  * @property array $changed_attributes
  * @property int $responsible_id
  * @property string $responsible_type
  * @property mixed $responsible
  * @property Carbon $created_at
+ *
+ * @method static Builder<static> query()
  */
 abstract class AbstractTransition extends Model
 {
-    public function from(): Attribute
+    public function start(): Attribute
     {
         return new Attribute(
-            get: fn ($value) => $this->states::from($value),
-            set: fn (?States $value) => optional($value)->value,
+            get: fn($value) => $this->states::from($value),
+            set: fn(?States $value) => optional($value)->value,
         );
     }
 
-    public function to(): Attribute
+    public function target(): Attribute
     {
         return new Attribute(
-            get: fn ($value) => $this->states::from($value),
-            set: fn (?States $value) => optional($value)->value,
+            get: fn($value) => $this->states::from($value),
+            set: fn(?States $value) => optional($value)->value,
         );
     }
 
@@ -68,43 +70,45 @@ abstract class AbstractTransition extends Model
         $query->where('field', $field);
     }
 
-    public function scopeFrom(Builder $query, States $from): void
+    public function scopeStart(Builder $query, States $start): void
     {
-        $query->where('from', $from->value);
+        $query->where('start', $start->value);
     }
 
-    public function scopeTo(Builder $query, States $to): void
+    public function scopeTarget(Builder $query, States $target): void
     {
-        $query->where('to', $to->value);
+        $query->where('target', $target->value);
     }
 
-    public function scopeWithTransition(Builder $query, States $from, States $to): void
+    public function scopeWithTransition(Builder $query, States $start, States $target): void
     {
-        $query->from($from)->to($to);
+        $query
+            ->where('start', $start->value)
+            ->where('target', $target->value);
     }
 
     /**
-     * @param  null  $value
+     * @param Builder $query
+     * @param string $key
+     * @param mixed $operator
+     * @param mixed $value
      *
      * @todo Proper Parameter types
      */
     public function scopeWithCustomProperty(
         Builder $query,
-        $key,
-        $operator,
-        $value = null
-    ): void {
+        string  $key,
+        mixed   $operator,
+        mixed   $value = null
+    ): void
+    {
         $query->where("custom_properties->{$key}", $operator, $value);
     }
 
-    public function scopeWithResponsible(Builder $query, Model|string|int $responsible): mixed
+    public function scopeForResponsible(Builder $query, Model $responsible): void
     {
-        if ($responsible instanceof Model) {
-            return $query
-                ->where('responsible_id', $responsible->getKey())
-                ->where('responsible_type', get_class($responsible));
-        }
-
-        return $query->where('responsible_id', $responsible);
+        $query
+            ->where('responsible_type', $responsible->getMorphClass())
+            ->where('responsible_id', $responsible->getKey());
     }
 }

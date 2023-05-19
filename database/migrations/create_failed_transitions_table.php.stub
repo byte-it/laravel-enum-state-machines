@@ -15,8 +15,8 @@ class CreateFailedTransitionsTable extends Migration
             $table->string('field');
             $table->string('states');
 
-            $table->string('from')->nullable();
-            $table->string('to')->nullable();
+            $table->string('start');
+            $table->string('target');
 
             $table->json('custom_properties')->nullable();
             $table->nullableMorphs('responsible');

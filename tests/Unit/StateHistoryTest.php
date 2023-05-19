@@ -7,8 +7,8 @@ it('can get custom property', function () {
     //Arrange
     $comments = 'Test comment';
     $transition = PastTransition::factory()->create([
-        'from' => TestState::Init,
-        'to' => TestState::Intermediate,
+        'start' => TestState::Init,
+        'target' => TestState::Intermediate,
         'states' => TestState::class,
         'field' => 'field',
         'model_type' => 'Model',
@@ -34,8 +34,8 @@ it('can get all custom properties', function (): void {
     ];
 
     $transition = PastTransition::factory()->create([
-        'from' => TestState::Init,
-        'to' => TestState::Intermediate,
+        'start' => TestState::Init,
+        'target' => TestState::Intermediate,
         'field' => 'field',
         'model_type' => 'Model',
         'model_id' => 1,

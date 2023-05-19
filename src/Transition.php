@@ -8,20 +8,29 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Arr;
+use Laravel\SerializableClosure\Exceptions\PhpVersionNotSupportedException;
 use Laravel\SerializableClosure\SerializableClosure;
 
+/**
+ * @template T of States
+ */
 class Transition
 {
     use InteractsWithQueue,
-
         Queueable,
         Dispatchable;
 
     public ?string $name;
 
-    public array $from = [];
+    /**
+     * @var array<int, T>
+     */
+    public array $start = [];
 
-    public array $to = [];
+    /**
+     * @var array<int, T>
+     */
+    public array $target = [];
 
     public ?SerializableClosure $guardCallback = null;
 
@@ -31,16 +40,21 @@ class Transition
     {
     }
 
-    public function from(?States ...$from): self
+
+    /**
+     * @param T|null ...$start
+     * @return $this
+     */
+    public function start(?States ...$start): self
     {
-        $this->from = $from;
+        $this->start = $start;
 
         return $this;
     }
 
-    public function to(?States ...$to): self
+    public function target(?States ...$target): self
     {
-        $this->to = $to;
+        $this->target = $target;
 
         return $this;
     }
@@ -59,6 +73,7 @@ class Transition
 
     /**
      * @return $this
+     * @throws PhpVersionNotSupportedException
      */
     public function action(Closure $action): static
     {
@@ -74,25 +89,30 @@ class Transition
         }
     }
 
-    public function applies(?States $from, States $to): bool
+    /**
+     * @param T|null $start
+     * @param T $target
+     * @return bool
+     */
+    public function applies(?States $start, States $target): bool
     {
-        $toMach = Arr::first($this->to, fn (States $allowed) => $allowed === $to);
+        $startMatch = Arr::first($this->target, fn(States $allowed) => $allowed === $target);
 
-        if ($toMach === null) {
+        if ($startMatch === null) {
             return false;
         }
 
-        if (count($this->from) === 0) {
+        if (count($this->start) === 0) {
             return true;
         }
 
-        $fromMatch = Arr::first($this->from, fn (States $allowed) => $allowed === $from);
+        $targetMatch = Arr::first($this->start, fn(States $allowed) => $allowed === $start);
 
-        return ! ($fromMatch === null);
+        return !($targetMatch === null);
     }
 
     public static function make(): static
     {
-        return new static();
+        return app(static::class);
     }
 }

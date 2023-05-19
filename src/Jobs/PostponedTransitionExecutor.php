@@ -30,11 +30,11 @@ class PostponedTransitionExecutor implements ShouldQueue
     {
         $field = $this->transition->field;
         $model = $this->transition->model;
-        $from = $this->transition->from;
+        $start = $this->transition->start;
 
-        if ($model->$field !== $from) {
+        if ($model->$field !== $start) {
             $exception = new InvalidStartingStateException(
-                $from,
+                $start,
                 $model->$field()->state()
             );
 

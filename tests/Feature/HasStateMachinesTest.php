@@ -254,9 +254,9 @@ it('can record postponed transition',
 
         expect($postponedTransition->field)
             ->toEqual('sync_state')
-            ->and($postponedTransition->from)
+            ->and($postponedTransition->start)
             ->toEqual(StateWithSyncAction::Created)
-            ->and($postponedTransition->to)
+            ->and($postponedTransition->target)
             ->toEqual(StateWithSyncAction::SyncAction)
             ->and($postponedTransition->transition_at)
             ->toEqual(Carbon::tomorrow()->startOfDay())

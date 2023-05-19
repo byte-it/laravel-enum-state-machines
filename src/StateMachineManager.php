@@ -11,12 +11,14 @@ use ReflectionException;
 class StateMachineManager
 {
     /**
-     * @var array<string, StateMachine>
+     * @var array<class-string, StateMachine>
      */
     protected array $booted = [];
 
     /**
-     * @param  class-string<States>  $states
+     * @template T of States
+     * @param class-string<T> $states
+     * @return StateMachine<T>|null
      */
     public function make(string $states): ?StateMachine
     {
