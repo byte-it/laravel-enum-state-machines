@@ -194,7 +194,7 @@ class PendingTransition implements TransitionContract
         if ($this->pending && $this->postponedTo) {
             $postponedTransition = new PostponedTransition([
                 ...$properties,
-                'transition' => $this->definition::class,
+                'transition' => $this->definition,
                 'transition_at' => $this->postponedTo,
             ]);
 

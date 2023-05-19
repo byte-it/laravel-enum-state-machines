@@ -10,10 +10,11 @@ use byteit\LaravelEnumStateMachines\Scopes\AppliedScope;
 use byteit\LaravelEnumStateMachines\Transition;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
- * @property class-string<Transition> $transition
+ * @property Transition $transition
  * @property Carbon $transition_at
  * @property ?Carbon $applied_at
  *
@@ -58,6 +59,15 @@ class PostponedTransition extends AbstractTransition implements TransitionContra
     {
         static::addGlobalScope(new AppliedScope);
     }
+
+
+    public function transition(): Attribute{
+        return Attribute::make(
+            get: fn(mixed $value) => unserialize($value),
+            set: fn(Transition $value) => serialize($value)
+        );
+    }
+
 
     protected static function newFactory(): PostponedTransitionFactory
     {
