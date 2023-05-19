@@ -3,6 +3,7 @@
 namespace byteit\LaravelEnumStateMachines;
 
 use byteit\LaravelEnumStateMachines\Contracts\States;
+use byteit\LaravelEnumStateMachines\Events\TransitionCompleted;
 use Closure;
 use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -35,6 +36,9 @@ class Transition
     public ?SerializableClosure $guardCallback = null;
 
     public ?SerializableClosure $actionCallback = null;
+
+    /** @var class-string<TransitionCompleted>  */
+    public string $event = TransitionCompleted::class;
 
     public function __construct()
     {
@@ -87,6 +91,15 @@ class Transition
         if ($this->actionCallback instanceof SerializableClosure) {
             call_user_func($this->actionCallback->getClosure(), $transition);
         }
+    }
+
+    /**
+     * @param class-string<TransitionCompleted> $event
+     * @return $this
+     */
+    public function fire(string $event): static{
+        $this->event = $event;
+        return $this;
     }
 
     /**

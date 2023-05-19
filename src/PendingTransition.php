@@ -130,7 +130,6 @@ class PendingTransition implements TransitionContract
 
         $this->model->save();
 
-        // TODO: Maybe move to event listener
         $this->releaseLock();
 
         $record = $this->toTransition();
@@ -138,10 +137,8 @@ class PendingTransition implements TransitionContract
         if ($record instanceof PastTransition) {
             $record->save();
 
-            TransitionCompleted::dispatch($record);
+            $this->definition->event::dispatch($record);
         }
-
-        // TODO: Call back proper event
 
         return $record;
     }

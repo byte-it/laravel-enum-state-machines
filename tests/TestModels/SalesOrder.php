@@ -38,8 +38,6 @@ class SalesOrder extends Model implements HasStateMachines
 
     /**
      * @return State<TestState>
-     *
-     * @throws BindingResolutionException
      */
     public function state(): State
     {
@@ -47,9 +45,7 @@ class SalesOrder extends Model implements HasStateMachines
     }
 
     /**
-     * @return State<StateWithAsyncAction>
-     *
-     * @throws BindingResolutionException
+     * @return State<StateWithSyncAction>
      */
     public function syncState(): State
     {
