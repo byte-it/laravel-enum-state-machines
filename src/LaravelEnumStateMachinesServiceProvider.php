@@ -2,6 +2,7 @@
 
 namespace byteit\LaravelEnumStateMachines;
 
+use byteit\LaravelEnumStateMachines\Commands\DispatchPostponedTransitionsCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -17,6 +18,7 @@ class LaravelEnumStateMachinesServiceProvider extends PackageServiceProvider
         $package
             ->name('laravel-enum-state-machines')
             ->hasConfigFile()
+            ->hasCommand(DispatchPostponedTransitionsCommand::class)
             ->hasMigration('create_postponed_transitions_table')
             ->hasMigration('create_past_transitions_table')
             ->hasMigration('create_failed_transitions_table');
