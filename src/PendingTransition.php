@@ -60,7 +60,7 @@ class PendingTransition implements TransitionContract
         public array|Arrayable|ArrayAccess $customProperties,
         public readonly mixed $responsible,
         public readonly Transition $definition,
-        ?string $uuid = null,
+        string $uuid = null,
     ) {
         $this->uuid = $uuid ?? Str::uuid();
 

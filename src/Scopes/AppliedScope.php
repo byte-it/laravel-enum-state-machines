@@ -28,7 +28,7 @@ class AppliedScope implements Scope
             return $builder;
         });
 
-        $builder->macro('onlyDue', function (Builder $builder, ?Carbon $now = null) {
+        $builder->macro('onlyDue', function (Builder $builder, Carbon $now = null) {
             $now = $now ?? now();
 
             $builder->where('transition_at', '<=', $now);
