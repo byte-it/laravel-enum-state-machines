@@ -7,12 +7,13 @@ use byteit\LaravelEnumStateMachines\Models\PostponedTransition;
 use byteit\LaravelEnumStateMachines\PendingTransition;
 use byteit\LaravelEnumStateMachines\TransitionDispatcher;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Throwable;
 
-class PostponedTransitionExecutor implements ShouldQueue
+class PostponedTransitionExecutor implements ShouldQueue, ShouldBeUnique
 {
     use InteractsWithQueue, Queueable, Dispatchable;
 
@@ -53,5 +54,13 @@ class PostponedTransitionExecutor implements ShouldQueue
         $pending = PendingTransition::fromPostponed($this->transition);
 
         $dispatcher->dispatch($pending);
+    }
+
+    /**
+     * Get the unique ID for the job.
+     */
+    public function uniqueId(): string
+    {
+        return $this->transition->uuid;
     }
 }
