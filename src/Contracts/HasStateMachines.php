@@ -10,17 +10,17 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 interface HasStateMachines
 {
     /**
-     * @return MorphMany<PastTransition>
+     * @return MorphMany<PastTransition<States>>
      */
     public function transitions(): MorphMany;
 
     /**
-     * @return MorphMany<PostponedTransition>
+     * @return MorphMany<PostponedTransition<States>>
      */
     public function postponedTransitions(): MorphMany;
 
     /**
-     * @return MorphOne<PostponedTransition>
+     * @return MorphOne<PostponedTransition<States>>
      */
     public function nextPostponedTransition(): MorphOne;
 }

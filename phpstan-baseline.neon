@@ -1,0 +1,46 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Method byteit\\\\LaravelEnumStateMachines\\\\Models\\\\AbstractTransition\\:\\:model\\(\\) should return Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\MorphTo\\<Illuminate\\\\Database\\\\Eloquent\\\\Model, byteit\\\\LaravelEnumStateMachines\\\\Models\\\\AbstractTransition\\<T of byteit\\\\LaravelEnumStateMachines\\\\Contracts\\\\States\\>\\> but returns Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\MorphTo\\<Illuminate\\\\Database\\\\Eloquent\\\\Model, byteit\\\\LaravelEnumStateMachines\\\\Models\\\\AbstractTransition\\>\\.$#"
+			count: 1
+			path: src/Models/AbstractTransition.php
+
+		-
+			message: "#^Method byteit\\\\LaravelEnumStateMachines\\\\Models\\\\AbstractTransition\\:\\:responsible\\(\\) should return Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\MorphTo\\<Illuminate\\\\Database\\\\Eloquent\\\\Model, byteit\\\\LaravelEnumStateMachines\\\\Models\\\\AbstractTransition\\<T of byteit\\\\LaravelEnumStateMachines\\\\Contracts\\\\States\\>\\> but returns Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\MorphTo\\<Illuminate\\\\Database\\\\Eloquent\\\\Model, byteit\\\\LaravelEnumStateMachines\\\\Models\\\\AbstractTransition\\>\\.$#"
+			count: 1
+			path: src/Models/AbstractTransition.php
+
+		-
+			message: "#^Method byteit\\\\LaravelEnumStateMachines\\\\State\\:\\:history\\(\\) should return Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\MorphMany\\<byteit\\\\LaravelEnumStateMachines\\\\Models\\\\PastTransition\\<T of byteit\\\\LaravelEnumStateMachines\\\\Contracts\\\\States\\>\\> but returns Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\MorphMany\\<byteit\\\\LaravelEnumStateMachines\\\\Models\\\\PastTransition\\<byteit\\\\LaravelEnumStateMachines\\\\Contracts\\\\States\\>\\>\\.$#"
+			count: 1
+			path: src/State.php
+
+		-
+			message: "#^Method byteit\\\\LaravelEnumStateMachines\\\\State\\:\\:nextPostponedTransition\\(\\) should return Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\MorphOne\\<byteit\\\\LaravelEnumStateMachines\\\\Models\\\\PostponedTransition\\<T of byteit\\\\LaravelEnumStateMachines\\\\Contracts\\\\States\\>\\> but returns Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\MorphOne\\<byteit\\\\LaravelEnumStateMachines\\\\Models\\\\PostponedTransition\\<byteit\\\\LaravelEnumStateMachines\\\\Contracts\\\\States\\>\\>\\.$#"
+			count: 1
+			path: src/State.php
+
+		-
+			message: "#^Method byteit\\\\LaravelEnumStateMachines\\\\State\\:\\:postponedTransitions\\(\\) should return Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\MorphMany\\<byteit\\\\LaravelEnumStateMachines\\\\Models\\\\PostponedTransition\\<T of byteit\\\\LaravelEnumStateMachines\\\\Contracts\\\\States\\>\\> but returns Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\MorphMany\\<byteit\\\\LaravelEnumStateMachines\\\\Models\\\\PostponedTransition\\<byteit\\\\LaravelEnumStateMachines\\\\Contracts\\\\States\\>\\>\\.$#"
+			count: 1
+			path: src/State.php
+
+		-
+			message: "#^Method byteit\\\\LaravelEnumStateMachines\\\\State\\:\\:snapshotsWhen\\(\\) should return Illuminate\\\\Support\\\\Collection\\<int, byteit\\\\LaravelEnumStateMachines\\\\Models\\\\PastTransition\\<T of byteit\\\\LaravelEnumStateMachines\\\\Contracts\\\\States\\>\\> but returns Illuminate\\\\Database\\\\Eloquent\\\\Collection\\<int, byteit\\\\LaravelEnumStateMachines\\\\Models\\\\PastTransition\\>\\.$#"
+			count: 1
+			path: src/State.php
+
+		-
+			message: "#^Method byteit\\\\LaravelEnumStateMachines\\\\State\\:\\:transitions\\(\\) should return array\\<array\\<int, T of byteit\\\\LaravelEnumStateMachines\\\\Contracts\\\\States\\>\\> but returns array\\<array\\<int, byteit\\\\LaravelEnumStateMachines\\\\Contracts\\\\States\\>\\>\\.$#"
+			count: 1
+			path: src/State.php
+
+		-
+			message: "#^Property byteit\\\\LaravelEnumStateMachines\\\\Transition\\<T of byteit\\\\LaravelEnumStateMachines\\\\Contracts\\\\States\\>\\:\\:\\$start \\(array\\<int, T of byteit\\\\LaravelEnumStateMachines\\\\Contracts\\\\States\\>\\) does not accept array\\<int\\|string, T of byteit\\\\LaravelEnumStateMachines\\\\Contracts\\\\States\\>\\.$#"
+			count: 1
+			path: src/Transition.php
+
+		-
+			message: "#^Property byteit\\\\LaravelEnumStateMachines\\\\Transition\\<T of byteit\\\\LaravelEnumStateMachines\\\\Contracts\\\\States\\>\\:\\:\\$target \\(array\\<int, T of byteit\\\\LaravelEnumStateMachines\\\\Contracts\\\\States\\>\\) does not accept array\\<int\\|string, T of byteit\\\\LaravelEnumStateMachines\\\\Contracts\\\\States\\>\\.$#"
+			count: 1
+			path: src/Transition.php

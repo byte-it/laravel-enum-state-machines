@@ -37,7 +37,7 @@ class Transition
 
     public ?SerializableClosure $actionCallback = null;
 
-    /** @var class-string<TransitionCompleted> */
+    /** @var class-string<TransitionCompleted<T>> */
     public string $event = TransitionCompleted::class;
 
     public function __construct()
@@ -45,23 +45,34 @@ class Transition
     }
 
     /**
-     * @param  T|null  ...$start
+     * @param  T  ...$start
+     *
      * @return $this
      */
-    public function start(?States ...$start): self
+    public function start(States ...$start): self
     {
         $this->start = $start;
 
         return $this;
     }
 
-    public function target(?States ...$target): self
+    /**
+     * @param T ...$target
+     *
+     * @return $this
+     */
+    public function target(States ...$target): self
     {
         $this->target = $target;
 
         return $this;
     }
 
+    /**
+     * @param Closure $guard
+     *
+     * @return $this
+     */
     public function guard(Closure $guard): static
     {
         $this->guardCallback = new SerializableClosure($guard);
@@ -69,15 +80,18 @@ class Transition
         return $this;
     }
 
-    public function checkGuard(PendingTransition $transition)
+    /**
+     * @param PendingTransition<T> $transition
+     * @return mixed|true
+     */
+    public function checkGuard(PendingTransition $transition): mixed
     {
         return $this->guardCallback ? call_user_func($this->guardCallback->getClosure(), $transition) : true;
     }
 
     /**
+     * @param Closure $action
      * @return $this
-     *
-     * @throws PhpVersionNotSupportedException
      */
     public function action(Closure $action): static
     {
@@ -86,6 +100,10 @@ class Transition
         return $this;
     }
 
+    /**
+     * @param PendingTransition<T> $transition
+     * @return void
+     */
     public function handle(PendingTransition $transition): void
     {
         if ($this->actionCallback instanceof SerializableClosure) {
@@ -94,7 +112,7 @@ class Transition
     }
 
     /**
-     * @param  class-string<TransitionCompleted>  $event
+     * @param  class-string<TransitionCompleted<T>>  $event
      * @return $this
      */
     public function fire(string $event): static
@@ -110,7 +128,7 @@ class Transition
      */
     public function applies(?States $start, States $target): bool
     {
-        $startMatch = Arr::first($this->target, fn (States $allowed) => $allowed === $target);
+        $startMatch = Arr::first($this->target, static fn (States $allowed) => $allowed === $target);
 
         if ($startMatch === null) {
             return false;
@@ -120,7 +138,7 @@ class Transition
             return true;
         }
 
-        $targetMatch = Arr::first($this->start, fn (States $allowed) => $allowed === $start);
+        $targetMatch = Arr::first($this->start, static fn (States $allowed) => $allowed === $start);
 
         return ! ($targetMatch === null);
     }

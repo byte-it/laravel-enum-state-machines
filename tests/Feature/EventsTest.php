@@ -71,8 +71,10 @@ test('the TransitionFailed event should be fired', function (SalesOrder $order) 
                 throw new Exception();
             })
     );
-
-    app(TransitionDispatcher::class)->dispatch($transition);
+    try {
+        app(TransitionDispatcher::class)->dispatch($transition);
+    } catch (Exception) {
+    }
 
     Event::assertDispatched(TransitionFailed::class);
     Event::assertNotDispatched(TransitionCompleted::class);

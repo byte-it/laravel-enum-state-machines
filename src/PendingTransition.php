@@ -26,6 +26,8 @@ use Throwable;
 
 /**
  * @template T of States
+ *
+ * @implements TransitionContract<T>
  */
 class PendingTransition implements TransitionContract
 {
@@ -49,8 +51,14 @@ class PendingTransition implements TransitionContract
     protected array $changes = [];
 
     /**
-     * @param  T  $start
-     * @param  T  $target
+     * @param T $start
+     * @param T $target
+     * @param Model $model
+     * @param string $field
+     * @param array<int|string, mixed>|Arrayable<int|string, mixed>|ArrayAccess<int|string, mixed> $customProperties
+     * @param Model|null $responsible
+     * @param Transition<T> $definition
+     * @param string|null $uuid
      */
     public function __construct(
         public readonly States $start,
@@ -58,11 +66,11 @@ class PendingTransition implements TransitionContract
         public readonly Model $model,
         public readonly string $field,
         public array|Arrayable|ArrayAccess $customProperties,
-        public readonly mixed $responsible,
+        public readonly Model|null $responsible,
         public readonly Transition $definition,
         string $uuid = null,
     ) {
-        $this->uuid = $uuid ?? Str::uuid();
+        $this->uuid = $uuid ?? Str::uuid()->toString();
 
         if ($this->definition instanceof ShouldQueue) {
             $this->async = true;
@@ -70,6 +78,8 @@ class PendingTransition implements TransitionContract
     }
 
     /**
+     * @return TransitionContract<T>
+     *
      * @throws StateLockedException
      * @throws TransitionGuardException
      */
@@ -111,11 +121,17 @@ class PendingTransition implements TransitionContract
         return $this;
     }
 
-    public function customProperties(): array
+    /**
+     * @return array<int|string,mixed>|ArrayAccess<int|string, mixed>|Arrayable<int|string, mixed>
+     */
+    public function customProperties(): array|Arrayable|ArrayAccess
     {
         return $this->customProperties;
     }
 
+    /**
+     * @return TransitionContract<T>
+     */
     public function finished(): TransitionContract
     {
         $this->model->{$this->field} = $this->target;
@@ -142,6 +158,12 @@ class PendingTransition implements TransitionContract
         return $record;
     }
 
+    /**
+     * @param Throwable $e
+     * @param bool $record
+     *
+     * @return TransitionContract<T>
+     */
     public function failed(Throwable $e, bool $record = true): TransitionContract
     {
         $this->pending = false;
@@ -163,6 +185,9 @@ class PendingTransition implements TransitionContract
         return $this;
     }
 
+    /**
+     * @return TransitionContract<T>
+     */
     public function toTransition(): TransitionContract
     {
         $properties = [
@@ -175,6 +200,7 @@ class PendingTransition implements TransitionContract
         ];
 
         if ($this->failed) {
+            /** @var FailedTransition<T> $failedTransition */
             $failedTransition = new FailedTransition([
                 ...$properties,
                 'failed_at' => now(),
@@ -192,6 +218,7 @@ class PendingTransition implements TransitionContract
         }
 
         if ($this->pending && $this->postponedTo) {
+            /** @var PostponedTransition<T> $postponedTransition */
             $postponedTransition = new PostponedTransition([
                 ...$properties,
                 'transition' => $this->definition,
@@ -212,6 +239,7 @@ class PendingTransition implements TransitionContract
             return $this;
         }
 
+        /** @var PastTransition<T> $transition */
         $transition = new PastTransition([
             ...$properties,
             'changed_attributes' => $this->changes,
@@ -255,6 +283,9 @@ class PendingTransition implements TransitionContract
         $this->changes = $this->getChangedAttributes();
     }
 
+    /**
+     * @return array
+     */
     public function getChangedAttributes(): array
     {
         return collect($this->model->getDirty())
@@ -269,6 +300,10 @@ class PendingTransition implements TransitionContract
             ->toArray();
     }
 
+    /**
+     * @param PostponedTransition<T> $transition
+     * @return PendingTransition<T>
+     */
     public static function fromPostponed(PostponedTransition $transition): PendingTransition
     {
 

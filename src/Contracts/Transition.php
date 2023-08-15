@@ -3,8 +3,9 @@
 namespace byteit\LaravelEnumStateMachines\Contracts;
 
 /**
- * @property States $start
- * @property States $target
+ * @template T of States
+ * @property T $start
+ * @property T $target
  */
 interface Transition
 {

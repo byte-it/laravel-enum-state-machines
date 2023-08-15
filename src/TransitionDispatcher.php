@@ -2,6 +2,7 @@
 
 namespace byteit\LaravelEnumStateMachines;
 
+use byteit\LaravelEnumStateMachines\Contracts\States;
 use byteit\LaravelEnumStateMachines\Contracts\Transition as TransitionContract;
 use byteit\LaravelEnumStateMachines\Exceptions\StateLockedException;
 use byteit\LaravelEnumStateMachines\Exceptions\TransitionGuardException;
@@ -21,11 +22,17 @@ class TransitionDispatcher
     }
 
     /**
+     * @template T of States
+     *
+     * @param PendingTransition<T> $transition
+     * @return TransitionContract<T>
+     *
+     * @throws StateLockedException
      * @throws Throwable
+     * @throws TransitionGuardException
      */
     public function dispatch(PendingTransition $transition): TransitionContract
     {
-
         try {
             $dispatch = match ($transition->shouldQueue()) {
                 true => $this->dispatcher->dispatchToQueue($transition),
@@ -38,25 +45,39 @@ class TransitionDispatcher
         } catch (StateLockedException|TransitionGuardException $e) {
             throw $e;
         } catch (Throwable $e) {
-            return $transition->failed($e, $transition->shouldQueue());
+            $failed = $transition->failed($e, $transition->shouldQueue());
+
+            if ($transition->shouldQueue()) {
+                return $failed;
+            }
+
+            throw $e;
         }
 
         return $transition;
     }
 
     /**
+     * @template T of States
+     *
+     * @param PendingTransition<T> $transition
+     *
      * @throws StateLockedException
      */
     public function lock(PendingTransition $transition): void
     {
         $lock = $this->repository->lock($transition);
 
-        if (! $lock->get()) {
+        if (!$lock->get()) {
             throw new StateLockedException();
         }
     }
 
     /**
+     * @template T of States
+     *
+     * @param PendingTransition<T> $transition
+     *
      * @throws TransitionGuardException
      */
     public function checkGuard(PendingTransition $transition): void
@@ -67,7 +88,7 @@ class TransitionDispatcher
             throw new TransitionGuardException(previous: $e);
         }
 
-        if (! $result) {
+        if (!$result) {
             throw new TransitionGuardException();
         }
     }

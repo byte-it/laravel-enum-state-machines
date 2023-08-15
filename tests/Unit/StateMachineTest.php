@@ -23,7 +23,7 @@ it('resolve the transition definition', function (StateMachine $machine) {
     ->todo();
 
 it(
-    'dispatch a transition',
+    'dispatches a transition',
     function (StateMachine $machine, SalesOrder $order) {
 
         Event::fake(TransitionStarted::class);
@@ -37,8 +37,7 @@ it(
     }
 )
     ->with('machine')
-    ->with('salesOrder')
-    ->skip('Fix');
+    ->with('salesOrder');
 
 it('fails to dispatch an invalid transition', function (StateMachine $machine, SalesOrder $order) {
 

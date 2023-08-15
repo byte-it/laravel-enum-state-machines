@@ -2,6 +2,7 @@
 
 namespace byteit\LaravelEnumStateMachines\Models;
 
+use byteit\LaravelEnumStateMachines\Contracts\States;
 use byteit\LaravelEnumStateMachines\Contracts\Transition as TransitionContract;
 use byteit\LaravelEnumStateMachines\Database\Factories\FailedTransitionFactory;
 use Carbon\Carbon;
@@ -10,9 +11,14 @@ use Throwable;
 
 /**
  * Class PostponedTransition
+ * @template T of States
  *
  * @property Carbon $failed_at
  * @property Throwable $exception
+ *
+ * @extends AbstractTransition<T>
+ * @implements TransitionContract<T>
+ *
  */
 class FailedTransition extends AbstractTransition implements TransitionContract
 {

@@ -2,6 +2,7 @@
 
 namespace byteit\LaravelEnumStateMachines\Jobs;
 
+use byteit\LaravelEnumStateMachines\Contracts\States;
 use byteit\LaravelEnumStateMachines\Exceptions\InvalidStartingStateException;
 use byteit\LaravelEnumStateMachines\Models\PostponedTransition;
 use byteit\LaravelEnumStateMachines\PendingTransition;
@@ -13,15 +14,21 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Throwable;
 
+/**
+ * @template T of States
+ *
+ * @property PostponedTransition<T> $postponedTransition
+ */
 class PostponedTransitionExecutor implements ShouldQueue, ShouldBeUnique
 {
     use InteractsWithQueue, Queueable, Dispatchable;
 
-    public PostponedTransition $transition;
 
-    public function __construct(PostponedTransition $transition)
+    /**
+     * @param PostponedTransition<T> $transition
+     */
+    public function __construct(public PostponedTransition $transition)
     {
-        $this->transition = $transition;
     }
 
     /**

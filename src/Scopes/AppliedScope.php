@@ -2,6 +2,8 @@
 
 namespace byteit\LaravelEnumStateMachines\Scopes;
 
+use byteit\LaravelEnumStateMachines\Contracts\States;
+use byteit\LaravelEnumStateMachines\Models\PostponedTransition;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
@@ -9,11 +11,21 @@ use Illuminate\Support\Carbon;
 
 class AppliedScope implements Scope
 {
+
+    /**
+     * @param Builder<PostponedTransition<States>> $builder
+     * @param Model $model
+     * @return void
+     */
     public function apply(Builder $builder, Model $model): void
     {
         $builder->whereNull('applied_at');
     }
 
+    /**
+     * @param Builder<PostponedTransition<States>> $builder
+     * @return void
+     */
     public function extend(Builder $builder): void
     {
         $builder->macro('withApplied', function (Builder $builder) {

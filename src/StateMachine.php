@@ -29,7 +29,7 @@ class StateMachine
     public bool $recordTransitions;
 
     /**
-     * @var array<string, class-string<TransitionCompleted>>
+     * @var array<string, class-string<TransitionCompleted<T>>>
      */
     public array $events = [];
 
@@ -74,11 +74,16 @@ class StateMachine
     }
 
     /**
-     * @param  T  $start
-     * @param  T  $target
+     * @param Model $model
+     * @param string $field
+     * @param T $start
+     * @param T $target
+     * @param array $customProperties
+     * @param Model|null $responsible
+     *
+     * @return TransitionContract<T>|null
      *
      * @throws TransitionNotAllowedException
-     * @throws Throwable
      */
     public function transitionTo(
         Model $model,
@@ -86,7 +91,7 @@ class StateMachine
         States $start,
         States $target,
         array $customProperties = [],
-        mixed $responsible = null
+        Model|null $responsible = null
     ): ?TransitionContract {
 
         $this->assertCanBe($start, $target);
@@ -104,9 +109,16 @@ class StateMachine
     }
 
     /**
-     * @param  T  $start
-     * @param  T  $target
-     * @param  null  $responsible
+     * @param Model $model
+     * @param string $field
+     * @param T $start
+     * @param T $target
+     * @param Carbon $when
+     * @param array $customProperties
+     * @param Model|null $responsible
+     * @param bool $skipAssertion
+     *
+     * @return PostponedTransition<T>|null
      *
      * @throws TransitionNotAllowedException
      */
@@ -117,7 +129,7 @@ class StateMachine
         States $target,
         Carbon $when,
         array $customProperties = [],
-        mixed $responsible = null,
+        ?Model $responsible = null,
         bool $skipAssertion = false,
     ): ?PostponedTransition {
 
@@ -152,22 +164,23 @@ class StateMachine
         return $this->recordTransitions;
     }
 
-    /*
+    /**
      * @param Model $model
      * @param string $field
      * @param T $from
      * @param T $to
-     * @param mixed $customProperties
-     * @param mixed $responsible
-     * @return PendingTransition
+     * @param array $customProperties
+     * @param Model|null $responsible
+     *
+     * @return PendingTransition<T>
      */
     protected function makeTransition(
         Model $model,
         string $field,
         States $from,
         States $to,
-        mixed $customProperties,
-        mixed $responsible = null
+        array $customProperties,
+        ?Model $responsible = null
     ): PendingTransition {
         $responsible = $responsible ?? auth()->user();
 
@@ -187,6 +200,7 @@ class StateMachine
     /**
      * @param  T|null  $from
      * @param  T  $to
+     * @return Transition<T>
      */
     public function resolveDefinition(?States $from, States $to): Transition
     {

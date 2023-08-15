@@ -11,50 +11,64 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
+ * @template T of States
  * @property int $id
  * @property string $uuid
- * @property (Model&HasStateMachines) $model
  * @property string $field
- * @property class-string<States> $states
- * @property States $start
- * @property States $target
+ * @property class-string<T> $states
+ * @property T $start
+ * @property T $target
  * @property array $custom_properties
  * @property array $changed_attributes
  * @property int $responsible_id
  * @property string $responsible_type
- * @property mixed $responsible
  * @property Carbon $created_at
+ *
+ * @property-read (Model&HasStateMachines) $model
+ * @property-read Model|null $responsible
  *
  * @method static Builder<static> query()
  */
 abstract class AbstractTransition extends Model
 {
+    /**
+     * @return Attribute<T,T>
+     */
     public function start(): Attribute
     {
         return new Attribute(
             get: fn ($value) => $this->states::from($value),
-            set: fn (?States $value) => optional($value)->value,
+            set: fn (?States $value) => $value?->value,
         );
     }
 
+    /**
+     * @return Attribute<T,T>
+     */
     public function target(): Attribute
     {
         return new Attribute(
             get: fn ($value) => $this->states::from($value),
-            set: fn (?States $value) => optional($value)->value,
+            set: fn (?States $value) => $value?->value,
         );
     }
 
-    public function getCustomProperty($key): mixed
+    public function getCustomProperty(string $key): mixed
     {
         return data_get($this->custom_properties, $key, null);
     }
 
+    /**
+     * @return MorphTo<Model, self<T>>
+     */
     public function model(): MorphTo
     {
         return $this->morphTo();
     }
 
+    /**
+     * @return MorphTo<Model, self<T>>
+     */
     public function responsible(): MorphTo
     {
         return $this->morphTo();
@@ -65,21 +79,42 @@ abstract class AbstractTransition extends Model
         return $this->custom_properties ?? [];
     }
 
+    /**
+     * @param Builder<self<T>> $query
+     * @param string $field
+     * @return void
+     */
     public function scopeForField(Builder $query, string $field): void
     {
         $query->where('field', $field);
     }
 
+    /**
+     * @param Builder<self<T>> $query
+     * @param T $start
+     * @return void
+     */
     public function scopeStart(Builder $query, States $start): void
     {
         $query->where('start', $start->value);
     }
 
+    /**
+     * @param Builder<self<T>> $query
+     * @param States $target
+     * @return void
+     */
     public function scopeTarget(Builder $query, States $target): void
     {
         $query->where('target', $target->value);
     }
 
+    /**
+     * @param Builder<self<T>> $query
+     * @param T $start
+     * @param T $target
+     * @return void
+     */
     public function scopeWithTransition(Builder $query, States $start, States $target): void
     {
         $query
@@ -88,9 +123,10 @@ abstract class AbstractTransition extends Model
     }
 
     /**
-     * @param  mixed  $value
-     *
-     * @todo Proper Parameter types
+     * @param Builder<self<T>> $query
+     * @param string $key
+     * @param mixed $operator
+     * @param mixed|null $value
      */
     public function scopeWithCustomProperty(
         Builder $query,
@@ -101,6 +137,11 @@ abstract class AbstractTransition extends Model
         $query->where("custom_properties->{$key}", $operator, $value);
     }
 
+    /**
+     * @param Builder<self<T>> $query
+     * @param Model $responsible
+     * @return void
+     */
     public function scopeForResponsible(Builder $query, Model $responsible): void
     {
         $query

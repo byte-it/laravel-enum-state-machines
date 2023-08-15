@@ -2,6 +2,7 @@
 
 namespace byteit\LaravelEnumStateMachines\Commands;
 
+use byteit\LaravelEnumStateMachines\Contracts\States;
 use byteit\LaravelEnumStateMachines\Jobs\PostponedTransitionExecutor;
 use byteit\LaravelEnumStateMachines\Models\PostponedTransition;
 use Illuminate\Console\Command;
@@ -17,20 +18,21 @@ class DispatchPostponedTransitionsCommand extends Command
 
     public function handle(): void
     {
-        /** @var Collection<PostponedTransition> $transitions */
+        /** @var Collection<int, PostponedTransition<States>> $transitions */
         $transitions = PostponedTransition::query()
             ->onlyDue()
             ->with(['model'])
             ->get();
 
         $transitions
-            ->each(function (PostponedTransition $transition) {
-
+            ->each(function (PostponedTransition $transition, $_) {
+                /** @var string|int $id */
+                $id = $transition->model->getKey();
                 $description = sprintf(
                     '<fg=gray>%s</> Dispatching [%s:%s] %s: %s -> %s',
                     Carbon::now()->format('Y-m-d H:i:s'),
                     $transition->model::class,
-                    $transition->model->getKey(),
+                    $id,
                     $transition->field,
                     $transition->start->value,
                     $transition->target->value

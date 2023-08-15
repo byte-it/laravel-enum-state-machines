@@ -2,6 +2,7 @@
 
 namespace byteit\LaravelEnumStateMachines;
 
+use byteit\LaravelEnumStateMachines\Contracts\States;
 use Illuminate\Cache\Repository;
 use Illuminate\Contracts\Cache\Lock;
 use Illuminate\Database\Eloquent\Model;
@@ -11,13 +12,17 @@ class TransitionRepository
 {
     protected string $lockPrefix = 'transition_lock';
 
-    protected Repository $connection;
-
-    public function __construct(Repository $cache)
+    public function __construct()
     {
-        $this->connection = $cache;
     }
 
+    /**
+     * @template T of States
+     *
+     * @param PendingTransition<T> $transition
+     *
+     * @return Lock
+     */
     public function lock(PendingTransition $transition): Lock
     {
         $key = $this->key($transition->model, $transition->field);
@@ -25,12 +30,24 @@ class TransitionRepository
         return Cache::lock($key, owner: $transition->uuid);
     }
 
+    /**
+     * @param Model $model
+     * @param string $field
+     *
+     * @return void
+     */
     public function forceRelease(Model $model, string $field): void
     {
         $key = $this->key($model, $field);
         Cache::lock($key)->forceRelease();
     }
 
+    /**
+     * @param Model $model
+     * @param string $field
+     *
+     * @return bool
+     */
     public function isLocked(Model $model, string $field): bool
     {
         $key = $this->key($model, $field);
