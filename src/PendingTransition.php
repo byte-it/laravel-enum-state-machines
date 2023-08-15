@@ -51,14 +51,10 @@ class PendingTransition implements TransitionContract
     protected array $changes = [];
 
     /**
-     * @param T $start
-     * @param T $target
-     * @param Model $model
-     * @param string $field
-     * @param array<int|string, mixed>|Arrayable<int|string, mixed>|ArrayAccess<int|string, mixed> $customProperties
-     * @param Model|null $responsible
-     * @param Transition<T> $definition
-     * @param string|null $uuid
+     * @param  T  $start
+     * @param  T  $target
+     * @param  array<int|string, mixed>|Arrayable<int|string, mixed>|ArrayAccess<int|string, mixed>  $customProperties
+     * @param  Transition<T>  $definition
      */
     public function __construct(
         public readonly States $start,
@@ -66,7 +62,7 @@ class PendingTransition implements TransitionContract
         public readonly Model $model,
         public readonly string $field,
         public array|Arrayable|ArrayAccess $customProperties,
-        public readonly Model|null $responsible,
+        public readonly ?Model $responsible,
         public readonly Transition $definition,
         string $uuid = null,
     ) {
@@ -159,9 +155,6 @@ class PendingTransition implements TransitionContract
     }
 
     /**
-     * @param Throwable $e
-     * @param bool $record
-     *
      * @return TransitionContract<T>
      */
     public function failed(Throwable $e, bool $record = true): TransitionContract
@@ -283,9 +276,6 @@ class PendingTransition implements TransitionContract
         $this->changes = $this->getChangedAttributes();
     }
 
-    /**
-     * @return array
-     */
     public function getChangedAttributes(): array
     {
         return collect($this->model->getDirty())
@@ -301,7 +291,7 @@ class PendingTransition implements TransitionContract
     }
 
     /**
-     * @param PostponedTransition<T> $transition
+     * @param  PostponedTransition<T>  $transition
      * @return PendingTransition<T>
      */
     public static function fromPostponed(PostponedTransition $transition): PendingTransition

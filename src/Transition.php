@@ -9,7 +9,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Arr;
-use Laravel\SerializableClosure\Exceptions\PhpVersionNotSupportedException;
 use Laravel\SerializableClosure\SerializableClosure;
 
 /**
@@ -46,7 +45,6 @@ class Transition
 
     /**
      * @param  T  ...$start
-     *
      * @return $this
      */
     public function start(States ...$start): self
@@ -57,8 +55,7 @@ class Transition
     }
 
     /**
-     * @param T ...$target
-     *
+     * @param  T  ...$target
      * @return $this
      */
     public function target(States ...$target): self
@@ -69,8 +66,6 @@ class Transition
     }
 
     /**
-     * @param Closure $guard
-     *
      * @return $this
      */
     public function guard(Closure $guard): static
@@ -81,7 +76,7 @@ class Transition
     }
 
     /**
-     * @param PendingTransition<T> $transition
+     * @param  PendingTransition<T>  $transition
      * @return mixed|true
      */
     public function checkGuard(PendingTransition $transition): mixed
@@ -90,7 +85,6 @@ class Transition
     }
 
     /**
-     * @param Closure $action
      * @return $this
      */
     public function action(Closure $action): static
@@ -101,8 +95,7 @@ class Transition
     }
 
     /**
-     * @param PendingTransition<T> $transition
-     * @return void
+     * @param  PendingTransition<T>  $transition
      */
     public function handle(PendingTransition $transition): void
     {

@@ -11,14 +11,15 @@ use Throwable;
 
 /**
  * Class PostponedTransition
+ *
  * @template T of States
  *
  * @property Carbon $failed_at
  * @property Throwable $exception
  *
  * @extends AbstractTransition<T>
- * @implements TransitionContract<T>
  *
+ * @implements TransitionContract<T>
  */
 class FailedTransition extends AbstractTransition implements TransitionContract
 {

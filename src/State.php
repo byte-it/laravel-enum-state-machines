@@ -41,16 +41,15 @@ class State
     protected string $field;
 
     /**
-     * @param T $state
-     * @param StateMachine<T> $stateMachine
+     * @param  T  $state
+     * @param  StateMachine<T>  $stateMachine
      */
     public function __construct(
-        ?States                $state,
+        ?States $state,
         Model&HasStateMachines $model,
-        string                 $field,
-        StateMachine           $stateMachine
-    )
-    {
+        string $field,
+        StateMachine $stateMachine
+    ) {
         $this->state = $state ?? $stateMachine->defaultState();
         $this->model = $model;
         $this->field = $field;
@@ -74,7 +73,7 @@ class State
     }
 
     /**
-     * @param T $state
+     * @param  T  $state
      */
     public function is(States $state): bool
     {
@@ -84,17 +83,17 @@ class State
     }
 
     /**
-     * @param T $state
+     * @param  T  $state
      */
     public function isNot(States $state): bool
     {
         $this->assertStateClass($state);
 
-        return !$this->is($state);
+        return ! $this->is($state);
     }
 
     /**
-     * @param T $state
+     * @param  T  $state
      */
     public function was(States $state): bool
     {
@@ -104,7 +103,7 @@ class State
     }
 
     /**
-     * @param T $state
+     * @param  T  $state
      */
     public function timesWas(States $state): int
     {
@@ -114,7 +113,7 @@ class State
     }
 
     /**
-     * @param T $state
+     * @param  T  $state
      */
     public function whenWas(States $state): ?Carbon
     {
@@ -129,8 +128,7 @@ class State
     }
 
     /**
-     * @param T $state
-     *
+     * @param  T  $state
      * @return PastTransition<T>|null
      */
     public function snapshotWhen(States $state): ?PastTransition
@@ -141,8 +139,7 @@ class State
     }
 
     /**
-     * @param T $state
-     *
+     * @param  T  $state
      * @return Collection<int, PastTransition<T>>
      */
     public function snapshotsWhen(States $state): Collection
@@ -161,9 +158,7 @@ class State
     }
 
     /**
-     * @param T $state
-     *
-     * @return bool
+     * @param  T  $state
      */
     public function canBe(States $state): bool
     {
@@ -204,15 +199,12 @@ class State
     public function transitions(): array
     {
         return collect($this->state::cases())
-            ->map(fn(States $states) => $states->transitions())
+            ->map(fn (States $states) => $states->transitions())
             ->all();
     }
 
     /**
-     * @param T $target
-     * @param array $customProperties
-     * @param Model|null $responsible
-     *
+     * @param  T  $target
      * @return TransitionContract<T>|null
      *
      * @throws TransitionNotAllowedException
@@ -220,10 +212,9 @@ class State
      */
     public function transitionTo(
         States $target,
-        array  $customProperties = [],
-        ?Model $responsible = null
-    ): ?TransitionContract
-    {
+        array $customProperties = [],
+        Model $responsible = null
+    ): ?TransitionContract {
         return $this->stateMachine->transitionTo(
             $this->model,
             $this->field,
@@ -235,12 +226,7 @@ class State
     }
 
     /**
-     * @param T $state
-     * @param Carbon $when
-     * @param array $customProperties
-     * @param Model|null $responsible
-     * @param bool $skipAssertion
-     *
+     * @param  T  $state
      * @return PostponedTransition<T>|null
      *
      * @throws TransitionNotAllowedException
@@ -248,11 +234,10 @@ class State
     public function postponeTransitionTo(
         States $state,
         Carbon $when,
-        array  $customProperties = [],
-        ?Model $responsible = null,
-        bool   $skipAssertion = false,
-    ): ?PostponedTransition
-    {
+        array $customProperties = [],
+        Model $responsible = null,
+        bool $skipAssertion = false,
+    ): ?PostponedTransition {
         return $this->stateMachine->postponeTransitionTo(
             $this->model,
             $this->field,
@@ -295,12 +280,12 @@ class State
 
     protected function assertStateClass(States $state): void
     {
-        if (!($state instanceof $this->state)) {
+        if (! ($state instanceof $this->state)) {
             throw new TypeError(sprintf(
-                    '$state must be of type %s, instead %s  was given.',
-                    $this->state::class,
-                    $state::class
-                )
+                '$state must be of type %s, instead %s  was given.',
+                $this->state::class,
+                $state::class
+            )
             );
         }
     }

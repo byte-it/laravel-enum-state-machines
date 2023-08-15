@@ -15,7 +15,7 @@ class TransitionStarted
     use Dispatchable, InteractsWithSockets;
 
     /**
-     * @param PendingTransition<T> $transition
+     * @param  PendingTransition<T>  $transition
      */
     public function __construct(
         public readonly PendingTransition $transition

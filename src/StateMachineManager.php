@@ -19,7 +19,7 @@ class StateMachineManager
     /**
      * @template T of States
      *
-     * @param class-string<T> $states
+     * @param  class-string<T>  $states
      * @return StateMachine<T>|null
      */
     public function make(string $states): ?StateMachine
@@ -48,16 +48,13 @@ class StateMachineManager
         return $instance;
     }
 
-    /**
-     * @param ReflectionEnum $reflection
-     * @return States|null
-     */
-    protected function getInitialState(ReflectionEnum $reflection): ?States {
+    protected function getInitialState(ReflectionEnum $reflection): ?States
+    {
         $attributes = $reflection->getAttributes(DefaultState::class);
         $defaultAttribute = Arr::first($attributes);
 
-        if(!($defaultAttribute instanceof ReflectionAttribute)){
-           return null;
+        if (! ($defaultAttribute instanceof ReflectionAttribute)) {
+            return null;
         }
         $instance = $defaultAttribute->newInstance();
 

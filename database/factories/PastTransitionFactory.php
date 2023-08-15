@@ -7,7 +7,6 @@ use byteit\LaravelEnumStateMachines\Models\PastTransition;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
-
 /**
  * @extends Factory<PastTransition<States>>
  */

@@ -9,7 +9,6 @@ use byteit\LaravelEnumStateMachines\Exceptions\TransitionNotAllowedException;
 use byteit\LaravelEnumStateMachines\Models\PostponedTransition;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Throwable;
 
 /**
  * @template T of States
@@ -74,13 +73,9 @@ class StateMachine
     }
 
     /**
-     * @param Model $model
-     * @param string $field
-     * @param T $start
-     * @param T $target
-     * @param array $customProperties
-     * @param Model|null $responsible
-     *
+     * @param  T  $start
+     * @param  T  $target
+     * @param  Model|null  $responsible
      * @return TransitionContract<T>|null
      *
      * @throws TransitionNotAllowedException
@@ -91,7 +86,7 @@ class StateMachine
         States $start,
         States $target,
         array $customProperties = [],
-        Model|null $responsible = null
+        Model $responsible = null
     ): ?TransitionContract {
 
         $this->assertCanBe($start, $target);
@@ -109,15 +104,8 @@ class StateMachine
     }
 
     /**
-     * @param Model $model
-     * @param string $field
-     * @param T $start
-     * @param T $target
-     * @param Carbon $when
-     * @param array $customProperties
-     * @param Model|null $responsible
-     * @param bool $skipAssertion
-     *
+     * @param  T  $start
+     * @param  T  $target
      * @return PostponedTransition<T>|null
      *
      * @throws TransitionNotAllowedException
@@ -129,7 +117,7 @@ class StateMachine
         States $target,
         Carbon $when,
         array $customProperties = [],
-        ?Model $responsible = null,
+        Model $responsible = null,
         bool $skipAssertion = false,
     ): ?PostponedTransition {
 
@@ -165,13 +153,8 @@ class StateMachine
     }
 
     /**
-     * @param Model $model
-     * @param string $field
-     * @param T $from
-     * @param T $to
-     * @param array $customProperties
-     * @param Model|null $responsible
-     *
+     * @param  T  $from
+     * @param  T  $to
      * @return PendingTransition<T>
      */
     protected function makeTransition(
@@ -180,7 +163,7 @@ class StateMachine
         States $from,
         States $to,
         array $customProperties,
-        ?Model $responsible = null
+        Model $responsible = null
     ): PendingTransition {
         $responsible = $responsible ?? auth()->user();
 

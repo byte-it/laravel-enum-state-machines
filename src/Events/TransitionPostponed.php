@@ -16,7 +16,7 @@ class TransitionPostponed
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * @param PostponedTransition<T> $transition
+     * @param  PostponedTransition<T>  $transition
      */
     public function __construct(public readonly PostponedTransition $transition)
     {

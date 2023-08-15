@@ -23,9 +23,8 @@ class PostponedTransitionExecutor implements ShouldQueue, ShouldBeUnique
 {
     use InteractsWithQueue, Queueable, Dispatchable;
 
-
     /**
-     * @param PostponedTransition<T> $transition
+     * @param  PostponedTransition<T>  $transition
      */
     public function __construct(public PostponedTransition $transition)
     {

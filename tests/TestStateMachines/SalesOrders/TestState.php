@@ -43,7 +43,7 @@ enum TestState: string implements States
         return [
             Transition::make()
                 ->start(self::Init)
-                ->target( self::Guarded)
+                ->target(self::Guarded)
                 ->guard(function (PendingTransition $transition) {
                     return false;
                 }),

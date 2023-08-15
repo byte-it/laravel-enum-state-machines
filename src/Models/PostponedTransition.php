@@ -13,7 +13,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * @template T of States
@@ -22,12 +21,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $transition_at
  * @property ?Carbon $applied_at
  *
- *
  * @method Builder<static> scopeWithApplied(Builder $builder)
  * @method Builder<static> scopeOnlyApplied(Builder $builder)
  * @method Builder<static> scopeOnlyDue(Builder $builder, Carbon|null $now = null)
  *
  * @extends AbstractTransition<T>
+ *
  * @implements TransitionContract<T>
  */
 class PostponedTransition extends AbstractTransition implements TransitionContract
@@ -74,10 +73,11 @@ class PostponedTransition extends AbstractTransition implements TransitionContra
     public function transition(): Attribute
     {
         return Attribute::make(
-            get: static function(mixed $value) {
-                if(is_string($value) ) {
+            get: static function (mixed $value) {
+                if (is_string($value)) {
                     return unserialize($value, ['allowed_classes' => [Transition::class]]);
                 }
+
                 return null;
             },
             set: static fn (Transition $value) => serialize($value)

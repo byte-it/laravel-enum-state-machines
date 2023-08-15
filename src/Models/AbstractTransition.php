@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * @template T of States
+ *
  * @property int $id
  * @property string $uuid
  * @property string $field
@@ -23,7 +24,6 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property int $responsible_id
  * @property string $responsible_type
  * @property Carbon $created_at
- *
  * @property-read (Model&HasStateMachines) $model
  * @property-read Model|null $responsible
  *
@@ -80,9 +80,7 @@ abstract class AbstractTransition extends Model
     }
 
     /**
-     * @param Builder<self<T>> $query
-     * @param string $field
-     * @return void
+     * @param  Builder<self<T>>  $query
      */
     public function scopeForField(Builder $query, string $field): void
     {
@@ -90,9 +88,8 @@ abstract class AbstractTransition extends Model
     }
 
     /**
-     * @param Builder<self<T>> $query
-     * @param T $start
-     * @return void
+     * @param  Builder<self<T>>  $query
+     * @param  T  $start
      */
     public function scopeStart(Builder $query, States $start): void
     {
@@ -100,9 +97,7 @@ abstract class AbstractTransition extends Model
     }
 
     /**
-     * @param Builder<self<T>> $query
-     * @param States $target
-     * @return void
+     * @param  Builder<self<T>>  $query
      */
     public function scopeTarget(Builder $query, States $target): void
     {
@@ -110,10 +105,9 @@ abstract class AbstractTransition extends Model
     }
 
     /**
-     * @param Builder<self<T>> $query
-     * @param T $start
-     * @param T $target
-     * @return void
+     * @param  Builder<self<T>>  $query
+     * @param  T  $start
+     * @param  T  $target
      */
     public function scopeWithTransition(Builder $query, States $start, States $target): void
     {
@@ -123,10 +117,7 @@ abstract class AbstractTransition extends Model
     }
 
     /**
-     * @param Builder<self<T>> $query
-     * @param string $key
-     * @param mixed $operator
-     * @param mixed|null $value
+     * @param  Builder<self<T>>  $query
      */
     public function scopeWithCustomProperty(
         Builder $query,
@@ -138,9 +129,7 @@ abstract class AbstractTransition extends Model
     }
 
     /**
-     * @param Builder<self<T>> $query
-     * @param Model $responsible
-     * @return void
+     * @param  Builder<self<T>>  $query
      */
     public function scopeForResponsible(Builder $query, Model $responsible): void
     {

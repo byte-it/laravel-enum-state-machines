@@ -7,7 +7,6 @@ use byteit\LaravelEnumStateMachines\Models\PostponedTransition;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-
 /**
  * @extends Factory<PostponedTransition<States>>
  */

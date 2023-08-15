@@ -11,11 +11,8 @@ use Illuminate\Support\Carbon;
 
 class AppliedScope implements Scope
 {
-
     /**
-     * @param Builder<PostponedTransition<States>> $builder
-     * @param Model $model
-     * @return void
+     * @param  Builder<PostponedTransition<States>>  $builder
      */
     public function apply(Builder $builder, Model $model): void
     {
@@ -23,8 +20,7 @@ class AppliedScope implements Scope
     }
 
     /**
-     * @param Builder<PostponedTransition<States>> $builder
-     * @return void
+     * @param  Builder<PostponedTransition<States>>  $builder
      */
     public function extend(Builder $builder): void
     {

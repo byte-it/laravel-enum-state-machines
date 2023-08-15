@@ -9,12 +9,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class Transition
+ *
  * @template T of States
  *
  * @method static PastTransition make(array $attributes)
  * @method static PastTransitionFactory factory($count = null, $state = [])
  *
  * @extends AbstractTransition<T>
+ *
  * @implements TransitionContract<T>
  */
 class PastTransition extends AbstractTransition implements TransitionContract

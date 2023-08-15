@@ -15,7 +15,7 @@ class TransitionCompleted
     use Dispatchable, InteractsWithSockets;
 
     /**
-     * @param PastTransition<T> $transition
+     * @param  PastTransition<T>  $transition
      */
     public function __construct(
         public readonly PastTransition $transition
