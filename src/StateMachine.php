@@ -75,7 +75,6 @@ class StateMachine
     /**
      * @param  T  $start
      * @param  T  $target
-     * @param  Model|null  $responsible
      * @return TransitionContract<T>|null
      *
      * @throws TransitionNotAllowedException

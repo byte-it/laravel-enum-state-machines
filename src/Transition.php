@@ -16,9 +16,9 @@ use Laravel\SerializableClosure\SerializableClosure;
  */
 class Transition
 {
-    use InteractsWithQueue,
-        Queueable,
-        Dispatchable;
+    use Dispatchable,
+        InteractsWithQueue,
+        Queueable;
 
     public ?string $name;
 

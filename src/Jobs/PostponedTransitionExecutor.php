@@ -19,9 +19,9 @@ use Throwable;
  *
  * @property PostponedTransition<T> $postponedTransition
  */
-class PostponedTransitionExecutor implements ShouldQueue, ShouldBeUnique
+class PostponedTransitionExecutor implements ShouldBeUnique, ShouldQueue
 {
-    use InteractsWithQueue, Queueable, Dispatchable;
+    use Dispatchable, InteractsWithQueue, Queueable;
 
     /**
      * @param  PostponedTransition<T>  $transition
@@ -39,7 +39,7 @@ class PostponedTransitionExecutor implements ShouldQueue, ShouldBeUnique
         $model = $this->transition->model;
         $start = $this->transition->start;
 
-        if ($model->$field !== $start) {
+        if ($start !== $model->$field) {
             $exception = new InvalidStartingStateException(
                 $start,
                 $model->$field()->state()

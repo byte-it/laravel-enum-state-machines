@@ -8,6 +8,7 @@ use byteit\LaravelEnumStateMachines\Models\PostponedTransition;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
+
 use function sprintf;
 
 class DispatchPostponedTransitionsCommand extends Command
@@ -28,7 +29,7 @@ class DispatchPostponedTransitionsCommand extends Command
             ->each(function (PostponedTransition $transition, $_) {
                 $model = $transition->model;
 
-                if($model === null){
+                if ($model === null) {
                     return;
                 }
                 /** @var string|int $id */

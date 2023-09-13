@@ -24,8 +24,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class SalesOrder extends Model implements HasStateMachines
 {
-    use InteractsWithStateMachines;
     use HasFactory;
+    use InteractsWithStateMachines;
 
     protected $guarded = [];
 

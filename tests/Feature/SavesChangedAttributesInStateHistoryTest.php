@@ -3,6 +3,7 @@
 use byteit\LaravelEnumStateMachines\Models\PastTransition;
 use byteit\LaravelEnumStateMachines\Tests\TestModels\SalesOrder;
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\StateWithSyncAction;
+
 use function PHPUnit\Framework\assertContains;
 use function PHPUnit\Framework\assertEquals;
 

@@ -13,6 +13,7 @@ use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\StateWit
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\StateWithSyncAction;
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\TestState;
 use Carbon\Carbon;
+
 use function Pest\Laravel\actingAs;
 
 it('can configure state machines', function (SalesOrder $salesOrder): void {
