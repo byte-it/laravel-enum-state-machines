@@ -26,12 +26,17 @@ class DispatchPostponedTransitionsCommand extends Command
 
         $transitions
             ->each(function (PostponedTransition $transition, $_) {
+                $model = $transition->model;
+
+                if($model === null){
+                    return;
+                }
                 /** @var string|int $id */
-                $id = $transition->model->getKey();
+                $id = $model->getKey();
                 $description = sprintf(
                     '<fg=gray>%s</> Dispatching [%s:%s] %s: %s -> %s',
                     Carbon::now()->format('Y-m-d H:i:s'),
-                    $transition->model::class,
+                    $model::class,
                     $id,
                     $transition->field,
                     $transition->start->value,
