@@ -75,7 +75,7 @@ class PostponedTransition extends AbstractTransition implements TransitionContra
         return Attribute::make(
             get: static function (mixed $value) {
                 if (is_string($value)) {
-                    return unserialize($value, ['allowed_classes' => [Transition::class]]);
+                    return unserialize($value);
                 }
 
                 return null;
