@@ -213,7 +213,7 @@ class State
     public function transitionTo(
         States $target,
         array $customProperties = [],
-        Model $responsible = null
+        ?Model $responsible = null
     ): ?TransitionContract {
         return $this->stateMachine->transitionTo(
             $this->model,
@@ -235,7 +235,7 @@ class State
         States $state,
         Carbon $when,
         array $customProperties = [],
-        Model $responsible = null,
+        ?Model $responsible = null,
         bool $skipAssertion = false,
     ): ?PostponedTransition {
         return $this->stateMachine->postponeTransitionTo(

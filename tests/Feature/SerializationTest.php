@@ -15,7 +15,8 @@ it('can serialize a PendingTransition', function (SalesOrder $order) {
         [],
         null,
         Transition::make()
-            ->action(function (PendingTransition $transition){}),
+            ->action(function (PendingTransition $transition) {
+            }),
     );
 
     $serialized = serialize($transition);

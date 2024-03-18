@@ -33,7 +33,7 @@ class StateMachine
     public array $events = [];
 
     /**
-     * @param  class-string<T>  $states The States enum class
+     * @param  class-string<T>  $states  The States enum class
      * @param  T  $initialState
      */
     public function __construct(
@@ -85,7 +85,7 @@ class StateMachine
         States $start,
         States $target,
         array $customProperties = [],
-        Model $responsible = null
+        ?Model $responsible = null
     ): ?TransitionContract {
 
         $this->assertCanBe($start, $target);
@@ -116,7 +116,7 @@ class StateMachine
         States $target,
         Carbon $when,
         array $customProperties = [],
-        Model $responsible = null,
+        ?Model $responsible = null,
         bool $skipAssertion = false,
     ): ?PostponedTransition {
 
@@ -162,7 +162,7 @@ class StateMachine
         States $from,
         States $to,
         array $customProperties,
-        Model $responsible = null
+        ?Model $responsible = null
     ): PendingTransition {
         $responsible = $responsible ?? auth()->user();
 
