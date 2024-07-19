@@ -250,10 +250,6 @@ class State
         );
     }
 
-
-    /**
-     * @return PostponedTransitionChain
-     */
     public function postponeTransitionChain(): PostponedTransitionChain
     {
         return new PostponedTransitionChain(

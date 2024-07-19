@@ -8,12 +8,8 @@ it('should execute guard from callback')->todo();
 it('should execute action from callback')->todo();
 it('serialize closures', function () {
     $transition = Transition::make()
-        ->guard(static function () {
-
-        })
-        ->action(static function () {
-
-        });
+        ->guard(static function () {})
+        ->action(static function () {});
 
     $serialized = serialize($transition);
 

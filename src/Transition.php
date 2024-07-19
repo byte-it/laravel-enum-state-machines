@@ -39,9 +39,7 @@ class Transition
     /** @var class-string<TransitionCompleted<T>> */
     public string $event = TransitionCompleted::class;
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     /**
      * @param  T  ...$start

@@ -8,6 +8,4 @@ namespace byteit\LaravelEnumStateMachines\Contracts;
  * @property T $start
  * @property T $target
  */
-interface Transition
-{
-}
+interface Transition {}

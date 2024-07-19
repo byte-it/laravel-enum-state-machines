@@ -8,7 +8,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- *
  * @template T of States
  */
 class PostponedTransitionChain
@@ -26,10 +25,9 @@ class PostponedTransitionChain
     protected string $field;
 
     /**
-     *
      * @var T
      */
-    protected  States $last;
+    protected States $last;
 
     /**
      * @param  T  $state
@@ -48,20 +46,17 @@ class PostponedTransitionChain
     }
 
     /**
-     * @param T $state
-     * @param Carbon $when
-     * @param array $customProperties
-     * @param Model|null $responsible
+     * @param  T  $state
      * @return $this
+     *
      * @throws Exceptions\TransitionNotAllowedException
      */
     public function transition(
         States $state,
         Carbon $when,
         array $customProperties = [],
-        Model $responsible = null,
-    ): static
-    {
+        ?Model $responsible = null,
+    ): static {
         $this->stateMachine->postponeTransitionTo(
             $this->model,
             $this->field,

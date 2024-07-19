@@ -19,6 +19,5 @@ class TransitionStarted
      */
     public function __construct(
         public readonly PendingTransition $transition
-    ) {
-    }
+    ) {}
 }

@@ -8,7 +8,5 @@ class PostponedTransitionCanceled
 {
     use Dispatchable;
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 }

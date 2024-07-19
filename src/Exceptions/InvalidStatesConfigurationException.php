@@ -4,6 +4,4 @@ namespace byteit\LaravelEnumStateMachines\Exceptions;
 
 use Exception;
 
-class InvalidStatesConfigurationException extends Exception
-{
-}
+class InvalidStatesConfigurationException extends Exception {}

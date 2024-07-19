@@ -18,7 +18,5 @@ class TransitionPostponed
     /**
      * @param  PostponedTransition<T>  $transition
      */
-    public function __construct(public readonly PostponedTransition $transition)
-    {
-    }
+    public function __construct(public readonly PostponedTransition $transition) {}
 }

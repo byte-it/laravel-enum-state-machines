@@ -11,9 +11,7 @@ class TransitionRepository
 {
     protected string $lockPrefix = 'transition_lock';
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     /**
      * @template T of States
