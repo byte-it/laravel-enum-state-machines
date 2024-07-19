@@ -250,6 +250,20 @@ class State
         );
     }
 
+
+    /**
+     * @return PostponedTransitionChain
+     */
+    public function postponeTransitionChain(): PostponedTransitionChain
+    {
+        return new PostponedTransitionChain(
+            $this->state,
+            $this->model,
+            $this->field,
+            $this->stateMachine,
+        );
+    }
+
     /**
      * @return PastTransition<T>|null
      */
