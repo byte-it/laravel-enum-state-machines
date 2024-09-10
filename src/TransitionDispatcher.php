@@ -24,7 +24,7 @@ class TransitionDispatcher
     /**
      * @template T of States
      *
-     * @param  PendingTransition<T>  $transition
+     * @param PendingTransition<T> $transition
      * @return TransitionContract<T>
      *
      * @throws StateLockedException
@@ -60,7 +60,7 @@ class TransitionDispatcher
     /**
      * @template T of States
      *
-     * @param  PendingTransition<T>  $transition
+     * @param PendingTransition<T> $transition
      *
      * @throws StateLockedException
      */
@@ -68,15 +68,21 @@ class TransitionDispatcher
     {
         $lock = $this->repository->lock($transition);
 
-        if (! $lock->get()) {
-            throw new StateLockedException();
+        if (!$lock->get()) {
+            throw new StateLockedException(
+                sprintf("Unable to get lock for transition %s on model %s:%s",
+                    $transition->uuid,
+                    $transition->model::class,
+                    $transition->model->getKey(),
+                )
+            );
         }
     }
 
     /**
      * @template T of States
      *
-     * @param  PendingTransition<T>  $transition
+     * @param PendingTransition<T> $transition
      *
      * @throws TransitionGuardException
      */
@@ -88,7 +94,7 @@ class TransitionDispatcher
             throw new TransitionGuardException(previous: $e);
         }
 
-        if (! $result) {
+        if (!$result) {
             throw new TransitionGuardException();
         }
     }

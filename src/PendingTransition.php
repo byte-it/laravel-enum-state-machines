@@ -318,7 +318,12 @@ class PendingTransition implements TransitionContract
             ->lock($this);
 
         if (! $lock->get()) {
-            throw new StateLockedException();
+            throw new StateLockedException(sprintf("Unable to get lock for transition %s on model %s:%s",
+                $this->uuid,
+                $this->model::class,
+                $this->model->getKey(),
+            )
+        );
         }
     }
 
