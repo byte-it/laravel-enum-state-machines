@@ -39,10 +39,10 @@ class TestCase extends Orchestra
         include_once __DIR__.'/database/migrations/create_sales_orders_table.php';
         include_once __DIR__.'/database/migrations/create_sales_managers_table.php';
 
-        (new \CreatePastTransitionsTable())->up();
-        (new \CreateFailedTransitionsTable())->up();
-        (new \CreatePostponedTransitionsTable())->up();
-        (new \CreateSalesOrdersTable())->up();
-        (new \CreateSalesManagersTable())->up();
+        (new \CreatePastTransitionsTable)->up();
+        (new \CreateFailedTransitionsTable)->up();
+        (new \CreatePostponedTransitionsTable)->up();
+        (new \CreateSalesOrdersTable)->up();
+        (new \CreateSalesManagersTable)->up();
     }
 }

@@ -97,7 +97,7 @@ it('should release the lock if the transition fails', function (SalesOrder $orde
         match ($type) {
             'sync' => Transition::make()
                 ->action(static function () {
-                    throw new Exception();
+                    throw new Exception;
                 }),
             'async' => WithQueuedAction::make()
                 ->throw()

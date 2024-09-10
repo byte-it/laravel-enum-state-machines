@@ -68,7 +68,7 @@ test('the TransitionFailed event should be fired', function (SalesOrder $order) 
         null,
         Transition::make()
             ->action(static function () {
-                throw new Exception();
+                throw new Exception;
             })
     );
     try {

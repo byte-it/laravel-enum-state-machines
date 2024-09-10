@@ -49,6 +49,6 @@ class FailedTransition extends AbstractTransition implements TransitionContract
 
     protected static function newFactory(): FailedTransitionFactory
     {
-        return new FailedTransitionFactory();
+        return new FailedTransitionFactory;
     }
 }

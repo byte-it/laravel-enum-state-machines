@@ -86,6 +86,6 @@ class PostponedTransition extends AbstractTransition implements TransitionContra
 
     protected static function newFactory(): PostponedTransitionFactory
     {
-        return new PostponedTransitionFactory();
+        return new PostponedTransitionFactory;
     }
 }

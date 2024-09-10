@@ -19,7 +19,7 @@ it('can be serialized', function () {
         'state',
         [],
         null,
-        new Transition(),
+        new Transition,
     );
 
     $serialized = serialize($transition);
@@ -46,7 +46,7 @@ it('can postpone a transition', function () {
         'state',
         [],
         null,
-        new Transition(),
+        new Transition,
     );
 
     $transition->postpone(now());
@@ -64,7 +64,7 @@ it('is async', function () {
         'state',
         [],
         null,
-        new AsyncTransition(),
+        new AsyncTransition,
     );
     expect($transition->shouldQueue())
         ->toBeTrue();
@@ -80,10 +80,10 @@ it('can fail', function () {
         'state',
         [],
         null,
-        new Transition(),
+        new Transition,
     );
 
-    $failed = $transition->failed(new Exception());
+    $failed = $transition->failed(new Exception);
 
     expect($transition->isFailed())
         ->toBeTrue()
@@ -105,7 +105,7 @@ it('can finish', function () {
         'state',
         [],
         null,
-        new Transition(),
+        new Transition,
     );
 
     /** @var PastTransition $finished */
@@ -134,7 +134,7 @@ it('has a uuid', function () {
         'state',
         [],
         null,
-        new Transition(),
+        new Transition,
     );
 
     expect(Str::isUuid($transition->uuid))->toBeTrue();

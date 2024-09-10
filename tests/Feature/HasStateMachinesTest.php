@@ -22,7 +22,7 @@ it('can configure state machines', function (SalesOrder $salesOrder): void {
 
 it('should set default state for field', function (SalesOrder $salesOrder): void {
 
-    $manager = new StateMachineManager();
+    $manager = new StateMachineManager;
 
     $statusStateMachine = $manager->make(
         StateWithSyncAction::class

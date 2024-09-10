@@ -122,7 +122,7 @@ test('it should fail for thrown exception', function (SalesOrder $order) {
         null,
         Transition::make()
             ->guard(static function () {
-                throw new Exception();
+                throw new Exception;
             })
     );
 

@@ -21,7 +21,7 @@ class WithQueuedAction extends Transition implements ShouldQueue
     {
 
         if ($this->throw) {
-            throw new Exception();
+            throw new Exception;
         }
 
         $model = $transition->model;

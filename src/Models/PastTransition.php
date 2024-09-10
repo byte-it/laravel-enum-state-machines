@@ -57,6 +57,6 @@ class PastTransition extends AbstractTransition implements TransitionContract
 
     protected static function newFactory(): PastTransitionFactory
     {
-        return new PastTransitionFactory();
+        return new PastTransitionFactory;
     }
 }
