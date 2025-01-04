@@ -23,10 +23,10 @@ class DispatchPostponedTransitionsCommand extends Command
         $class = $this->option('model');
 
         $query = PostponedTransition::query()
-          ->onlyDue()
-          ->with(['model']);
+            ->onlyDue()
+            ->with(['model']);
 
-        if($class) {
+        if ($class) {
             $query->where('model_type', $class);
         }
 

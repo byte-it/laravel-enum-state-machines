@@ -50,10 +50,10 @@ it('should transition to next state', function (SalesOrder $salesOrder): void {
         ->and($salesOrder->sync_state)
         ->toEqual(StateWithSyncAction::Created);
 
-    //Act
+    // Act
     $salesOrder->syncState()->transitionTo(StateWithSyncAction::SyncAction);
 
-    //Assert
+    // Assert
     $salesOrder->refresh();
 
     expect($salesOrder->syncState()->is(StateWithSyncAction::SyncAction))
@@ -67,12 +67,12 @@ it(
     'should register responsible for transition when specified',
     function (SalesManager $salesManager, SalesOrder $salesOrder): void {
 
-        //Act
+        // Act
         $salesOrder
             ->syncState()
             ->transitionTo(StateWithSyncAction::SyncAction, [], $salesManager);
 
-        //Assert
+        // Assert
         $salesOrder->refresh();
 
         $responsible = $salesOrder->syncState()->responsible();
@@ -96,14 +96,14 @@ it(
 
 it('should register auth as responsible for transition when available',
     function (SalesManager $salesManager, SalesOrder $salesOrder): void {
-        //Arrange
+        // Arrange
 
         actingAs($salesManager);
 
-        //Act
+        // Act
         $salesOrder->syncState()->transitionTo(StateWithSyncAction::SyncAction);
 
-        //Assert
+        // Assert
         $salesOrder->refresh();
 
         $responsible = $salesOrder->syncState()->responsible();

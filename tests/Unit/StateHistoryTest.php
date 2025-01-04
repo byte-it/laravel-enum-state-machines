@@ -4,7 +4,7 @@ use byteit\LaravelEnumStateMachines\Models\PastTransition;
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\TestState;
 
 it('can get custom property', function () {
-    //Arrange
+    // Arrange
     $comments = 'Test comment';
     $transition = PastTransition::factory()->create([
         'start' => TestState::Init,
@@ -18,15 +18,15 @@ it('can get custom property', function () {
         ],
     ]);
 
-    //Act
+    // Act
     $result = $transition->getCustomProperty('comments');
 
-    //Assert
+    // Assert
     $this->assertEquals($comments, $result);
 });
 
 it('can get all custom properties', function (): void {
-    //Arrange
+    // Arrange
     $customProperties = [
         'amount' => 2,
         'comments' => 'Test comment',
@@ -43,9 +43,9 @@ it('can get all custom properties', function (): void {
         'custom_properties' => $customProperties,
     ]);
 
-    //Act
+    // Act
     $result = $transition->allCustomProperties();
 
-    //Assert
+    // Assert
     $this->assertEquals($customProperties, $result);
 });

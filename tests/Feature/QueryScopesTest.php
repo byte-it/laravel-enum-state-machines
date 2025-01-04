@@ -8,7 +8,7 @@ use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\StateWit
 use byteit\LaravelEnumStateMachines\Tests\TestStateMachines\SalesOrders\TestState;
 
 it('can get models with transition responsible model', function () {
-    //Arrange
+    // Arrange
     $salesManager = SalesManager::factory()->create();
 
     $anotherSalesManager = SalesManager::factory()->create();
@@ -26,14 +26,14 @@ it('can get models with transition responsible model', function () {
         ->state()
         ->transitionTo(TestState::Intermediate, [], $anotherSalesManager);
 
-    //Act
+    // Act
     $salesOrders = SalesOrder::with([])
         ->whereHasState(function ($query) use ($salesManager) {
             $query->withResponsible($salesManager);
         })
         ->get();
 
-    //Assert
+    // Assert
     $this->assertEquals(2, $salesOrders->count());
 
     $salesOrders->each(function (SalesOrder $salesOrder) use ($salesManager) {
@@ -43,7 +43,7 @@ it('can get models with transition responsible model', function () {
 })->skip();
 
 it('can get models with transition responsible id', function () {
-    //Arrange
+    // Arrange
     $salesManager = SalesManager::factory()->create();
 
     $anotherSalesManager = SalesManager::factory()->create();
@@ -57,19 +57,19 @@ it('can get models with transition responsible id', function () {
         ->state()
         ->transitionTo(TestState::Intermediate, [], $anotherSalesManager);
 
-    //Act
+    // Act
     $salesOrders = SalesOrder::with([])
         ->whereHasState(function ($query) use ($salesManager) {
             $query->withResponsible($salesManager->id);
         })
         ->get();
 
-    //Assert
+    // Assert
     $this->assertEquals(1, $salesOrders->count());
 })->skip();
 
 it('can get models with specific transition', function () {
-    //Arrange
+    // Arrange
     $salesOrder = SalesOrder::factory()->create();
     $salesOrder->state()->transitionTo(TestState::Intermediate);
     $salesOrder->syncState()->transitionTo(StateWithSyncAction::SyncAction);
@@ -78,7 +78,7 @@ it('can get models with specific transition', function () {
     $anotherSalesOrder = SalesOrder::factory()->create();
     $anotherSalesOrder->state()->transitionTo(TestState::Intermediate);
 
-    //Act
+    // Act
     $salesOrders = SalesOrder::with([])
         ->whereHasState(function ($query) {
             $query->withTransition(TestState::Intermediate,
@@ -86,14 +86,14 @@ it('can get models with specific transition', function () {
         })
         ->get();
 
-    //Assert
+    // Assert
     $this->assertEquals(1, $salesOrders->count());
 
     $this->assertEquals($salesOrder->id, $salesOrders->first()->id);
 })->skip();
 
 it('can get models with specific transition to state', function () {
-    //Arrange
+    // Arrange
     $salesOrder = SalesOrder::factory()->create();
     $salesOrder->state()->transitionTo(TestState::Intermediate);
     $salesOrder->state()->transitionTo(TestState::Finished);
@@ -101,21 +101,21 @@ it('can get models with specific transition to state', function () {
     $anotherSalesOrder = SalesOrder::factory()->create();
     $anotherSalesOrder->state()->transitionTo(TestState::Intermediate);
 
-    //Act
+    // Act
     $salesOrders = SalesOrder::with([])
         ->whereHasState(function ($query) {
             $query->to(TestState::Finished);
         })
         ->get();
 
-    //Assert
+    // Assert
     $this->assertEquals(1, $salesOrders->count());
 
     $this->assertEquals($salesOrder->id, $salesOrders->first()->id);
 })->skip();
 
 it('can get models with specific transition from state', function () {
-    //Arrange
+    // Arrange
     $salesOrder = SalesOrder::factory()->create();
     $salesOrder->state()->transitionTo(TestState::Intermediate);
     $salesOrder->state()->transitionTo(TestState::Finished);
@@ -123,21 +123,21 @@ it('can get models with specific transition from state', function () {
     $anotherSalesOrder = SalesOrder::factory()->create();
     $anotherSalesOrder->state()->transitionTo(TestState::Intermediate);
 
-    //Act
+    // Act
     $salesOrders = SalesOrder::with([])
         ->whereHasState(function ($query) {
             $query->from(TestState::Intermediate);
         })
         ->get();
 
-    //Assert
+    // Assert
     $this->assertEquals(1, $salesOrders->count());
 
     $this->assertEquals($salesOrder->id, $salesOrders->first()->id);
 })->skip();
 
 it('can get models with specific transition custom property', function () {
-    //Arrange
+    // Arrange
     $salesOrder = SalesOrder::factory()->create();
     $salesOrder->state()
         ->transitionTo(TestState::Intermediate, ['comments' => 'Checked']);
@@ -147,21 +147,21 @@ it('can get models with specific transition custom property', function () {
         ->transitionTo(TestState::Intermediate,
             ['comments' => 'Needs further revision']);
 
-    //Act
+    // Act
     $salesOrders = SalesOrder::with([])
         ->whereHasState(function ($query) {
             $query->withCustomProperty('comments', 'like', '%Check%');
         })
         ->get();
 
-    //Assert
+    // Assert
     $this->assertEquals(1, $salesOrders->count());
 
     $this->assertEquals($salesOrder->id, $salesOrders->first()->id);
 })->skip();
 
 it('can get models using multiple state machines transitions', function () {
-    //Arrange
+    // Arrange
     $salesOrder = SalesOrder::factory()->create();
     $salesOrder->state()->transitionTo(TestState::Intermediate);
     $salesOrder->state()->transitionTo(TestState::Finished);
@@ -169,7 +169,7 @@ it('can get models using multiple state machines transitions', function () {
     $anotherSalesOrder = SalesOrder::factory()->create();
     $anotherSalesOrder->state()->transitionTo(TestState::Intermediate);
 
-    //Act
+    // Act
 
     $salesOrders = SalesOrder::with([])
         ->whereHasState(function ($query) {
@@ -180,7 +180,7 @@ it('can get models using multiple state machines transitions', function () {
         })
         ->get();
 
-    //Assert
+    // Assert
     $this->assertEquals(1, $salesOrders->count());
 
     $this->assertEquals($salesOrder->id, $salesOrders->first()->id);

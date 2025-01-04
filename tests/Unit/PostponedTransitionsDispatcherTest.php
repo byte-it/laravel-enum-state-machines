@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Queue;
 it('should dispatch postponed transition', function () {
 
     Queue::fake();
-    //Arrange
+    // Arrange
     $salesOrder = SalesOrder::factory()->create();
 
     $postponed = $salesOrder
@@ -24,10 +24,10 @@ it('should dispatch postponed transition', function () {
 
     $this->assertTrue($salesOrder->state()->hasPostponedTransitions());
 
-    //Act
+    // Act
     (new PostponedTransitionsDispatcher)->handle();
 
-    //Asser
+    // Asser
 
     Queue::assertPushed(PostponedTransitionExecutor::class,
         function (PostponedTransitionExecutor $job) use ($postponed) {
@@ -39,7 +39,7 @@ it('should dispatch postponed transition', function () {
 
 it('should not dispatch future pending transitions', function () {
     Queue::fake();
-    //Arrange
+    // Arrange
     $salesOrder = SalesOrder::factory()->create();
 
     $salesOrder
@@ -48,10 +48,10 @@ it('should not dispatch future pending transitions', function () {
 
     $this->assertTrue($salesOrder->state()->hasPostponedTransitions());
 
-    //Act
+    // Act
     (new PostponedTransitionsDispatcher)->handle();
 
-    //Assert
+    // Assert
     $salesOrder->refresh();
 
     $this->assertTrue($salesOrder->state()->hasPostponedTransitions());

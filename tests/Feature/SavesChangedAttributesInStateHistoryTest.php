@@ -8,7 +8,7 @@ use function PHPUnit\Framework\assertContains;
 use function PHPUnit\Framework\assertEquals;
 
 it('should save changed attributes when transitioning state', function () {
-    //Arrange
+    // Arrange
     $salesOrder = new SalesOrder([
         'total' => 100,
         'notes' => 'some notes',
@@ -16,7 +16,7 @@ it('should save changed attributes when transitioning state', function () {
 
     $salesOrder->save();
 
-    //Act
+    // Act
     $salesOrder->refresh();
 
     $salesOrder->total = 200;
@@ -24,7 +24,7 @@ it('should save changed attributes when transitioning state', function () {
 
     $salesOrder->syncState()->transitionTo(StateWithSyncAction::SyncAction);
 
-    //Assert
+    // Assert
     $salesOrder->refresh();
 
     /** @var PastTransition $lastStateTransition */

@@ -9,7 +9,7 @@ use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Support\Facades\Queue;
 
 it('should apply pending transition', function () {
-    //Arrange
+    // Arrange
     $salesManager = SalesManager::factory()->create();
 
     $salesOrder = SalesOrder::factory()->create();
@@ -29,10 +29,10 @@ it('should apply pending transition', function () {
         $this->assertFalse($event->job->hasFailed());
     });
 
-    //Act
+    // Act
     (new PostponedTransitionExecutor($pendingTransition))->handle();
 
-    //Assert
+    // Assert
     $salesOrder->refresh();
 
     $this->assertTrue($salesOrder->state()->is(TestState::Intermediate));
