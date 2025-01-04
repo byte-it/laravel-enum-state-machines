@@ -13,17 +13,25 @@ use function sprintf;
 
 class DispatchPostponedTransitionsCommand extends Command
 {
-    protected $signature = 'state-machine:dispatch-postponed';
+    protected $signature = 'state-machine:dispatch-postponed {--model= : The model class to dispatch postponed transitions for}';
 
     protected $description = 'Dispatches all postponed transitions that are on schedule';
 
     public function handle(): void
     {
+
+        $class = $this->option('model');
+
+        $query = PostponedTransition::query()
+          ->onlyDue()
+          ->with(['model']);
+
+        if($class) {
+            $query->where('model_type', $class);
+        }
+
         /** @var Collection<int, PostponedTransition<States>> $transitions */
-        $transitions = PostponedTransition::query()
-            ->onlyDue()
-            ->with(['model'])
-            ->get();
+        $transitions = $query->get();
 
         $transitions
             ->each(function (PostponedTransition $transition, $_) {
@@ -32,6 +40,7 @@ class DispatchPostponedTransitionsCommand extends Command
                 if ($model === null) {
                     return;
                 }
+
                 /** @var string|int $id */
                 $id = $model->getKey();
                 $description = sprintf(
