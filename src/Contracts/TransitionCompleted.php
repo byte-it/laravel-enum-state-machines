@@ -9,7 +9,6 @@ use byteit\LaravelEnumStateMachines\Models\PastTransition;
  */
 interface TransitionCompleted
 {
-
     /**
      * @param  PastTransition<T>  $transition
      */
