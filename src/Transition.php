@@ -103,7 +103,7 @@ class Transition
     }
 
     /**
-     * @param  class-string<TransitionCompleted<T>>  $event
+     * @param  class-string<covariant Contracts\TransitionCompleted<T>>  $event
      * @return $this
      */
     public function fire(string $event): static
