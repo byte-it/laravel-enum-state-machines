@@ -13,9 +13,11 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * @template T of States
+ * @template TModel of Model
  *
  * @property Transition<T> $transition
  * @property Carbon $transition_at
@@ -25,7 +27,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method Builder<static> scopeOnlyApplied(Builder $builder)
  * @method Builder<static> scopeOnlyDue(Builder $builder, Carbon|null $now = null)
  *
- * @extends AbstractTransition<T>
+ * @extends AbstractTransition<T, TModel>
  *
  * @implements TransitionContract<T>
  */

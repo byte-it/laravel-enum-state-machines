@@ -6,16 +6,18 @@ use byteit\LaravelEnumStateMachines\Contracts\States;
 use byteit\LaravelEnumStateMachines\Contracts\Transition as TransitionContract;
 use byteit\LaravelEnumStateMachines\Database\Factories\PastTransitionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Transition
  *
  * @template T of States
+ * @template TModel of Model
  *
  * @method static PastTransition make(array $attributes)
  * @method static PastTransitionFactory factory($count = null, $state = [])
  *
- * @extends AbstractTransition<T>
+ * @extends AbstractTransition<T, TModel>
  *
  * @implements TransitionContract<T>
  */

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * @template T of States
+ * @template TModel of Model
  *
  * @property int $id
  * @property string $uuid
@@ -24,7 +25,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property int $responsible_id
  * @property string $responsible_type
  * @property Carbon $created_at
- * @property-read (Model&HasStateMachines) $model
+ * @property-read TModel $model
  * @property-read Model|null $responsible
  *
  * @method static Builder<static> query()
@@ -59,7 +60,7 @@ abstract class AbstractTransition extends Model
     }
 
     /**
-     * @return MorphTo<Model, self<T>>
+     * @return MorphTo<TModel, self<T>>
      */
     public function model(): MorphTo
     {
