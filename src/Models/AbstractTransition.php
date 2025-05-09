@@ -2,7 +2,6 @@
 
 namespace byteit\LaravelEnumStateMachines\Models;
 
-use byteit\LaravelEnumStateMachines\Contracts\HasStateMachines;
 use byteit\LaravelEnumStateMachines\Contracts\States;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;

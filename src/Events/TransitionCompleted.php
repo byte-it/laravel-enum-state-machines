@@ -29,7 +29,8 @@ class TransitionCompleted implements TransitionCompletedContract
     /**
      * @return TModel
      */
-    public function getModel(): Model {
+    public function getModel(): Model
+    {
         return $this->transition->model;
     }
 }

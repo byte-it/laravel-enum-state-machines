@@ -54,7 +54,7 @@ class PendingTransition implements TransitionContract
     /**
      * @param  T  $start
      * @param  T  $target
-     * @param  TModel $model
+     * @param  TModel  $model
      * @param  array<int|string, mixed>|Arrayable<int|string, mixed>|ArrayAccess<int|string, mixed>  $customProperties
      * @param  Transition<T>  $definition
      */
